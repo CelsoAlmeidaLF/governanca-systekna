@@ -10,7 +10,7 @@ import { LocalStorageMockAdapter } from './LocalStorageMockAdapter.js';
  * Implementa as 4 portas de dados (Feedback, Erros, Governança de Usuários e Notícias Devs)
  * comunicando com o Firebase Firestore (via SDK Modular ou REST API com fallback para LocalStorage).
  */
-export class FirestoreGovernanceAdapter implements IFeedbackPort, IErrorReportingPort, IUserGovernancePort, IDevNewsPort {
+export class FirestoreGovernanceAdapter {
   constructor() {
     this._cfg = FirebaseConfigProvider.getConfig();
     this._mock = new LocalStorageMockAdapter();
