@@ -1,0 +1,17 @@
+{
+  "name": "Governança Systekna — CEO & Engenheiro Chefe",
+  "short_name": "Systekna Gov",
+  "description": "Painel de Governança, Aprovação de Usuários, Telemetria de Erros e Feedbacks da Systekna",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0a0f1d",
+  "theme_color": "#00d2ff",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}

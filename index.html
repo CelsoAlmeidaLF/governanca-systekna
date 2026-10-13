@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Governança da Systekna — CEO & Engenheiro Chefe</title>
+  <meta name="description" content="Painel Soberano de Governança, Homologação de Usuários, Telemetria de Erros, Gestão de Feedbacks e Notícias aos Desenvolvedores da Systekna.">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  
+  <!-- Fontes Google Fonts Modernas -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Estilos Aero Glassmorphism 2.0 -->
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/animations.css">
+</head>
+<body>
+
+  <!-- ==========================================
+       TELA DE AUTENTICAÇÃO (FIREBASE AUTH)
+       ========================================== -->
+  <div id="auth-wrapper" class="auth-wrapper">
+    <div class="auth-card">
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+        <div class="brand-logo">🏛️</div>
+        <div>
+          <h1 style="font-size:1.4rem;font-weight:700;color:#ffffff;letter-spacing:-0.02em;">Governança Systekna</h1>
+          <p style="font-size:0.75rem;color:var(--color-primary);text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">CEO & Engenheiro Chefe</p>
+        </div>
+      </div>
+
+      <div id="login-error" style="display:none;padding:0.75rem 1rem;background:var(--color-danger-bg);border:1px solid rgba(255,23,68,0.35);border-radius:var(--border-radius-sm);color:#ff5277;font-size:0.85rem;"></div>
+
+      <form id="login-form" style="display:flex;flex-direction:column;gap:1rem;">
+        <div class="form-group">
+          <label class="form-label" for="login-email">E-mail Corporativo</label>
+          <input type="email" id="login-email" class="form-input" placeholder="seu-email@systekna.com" required autocomplete="username">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="login-password">Senha de Segurança</label>
+          <input type="password" id="login-password" class="form-input" placeholder="••••••••••••" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" id="login-btn" class="btn btn-primary" style="margin-top:0.5rem;">
+          Acessar Governança Systekna
+        </button>
+      </form>
+
+      <div style="display:flex;flex-direction:column;gap:0.75rem;padding-top:1rem;border-top:var(--glass-border-subtle);text-align:center;">
+        <button type="button" id="demo-login-btn" class="btn btn-secondary btn-sm" style="width:100%;">
+          ⚡ Acesso Rápido Modo Demonstração (CEO)
+        </button>
+        <button type="button" id="reset-password-btn" style="background:transparent;border:none;color:var(--text-dim);font-size:0.8rem;cursor:pointer;text-decoration:underline;">
+          Esqueceu sua senha? Solicitar redefinição
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       PAINEL PRINCIPAL (SPA DE GOVERNANÇA)
+       ========================================== -->
+  <div id="app-container" class="app-container" style="display:none;">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand-header">
+        <div class="brand-logo">🏛️</div>
+        <div class="brand-title">
+          <span>Systekna</span>
+          <span class="brand-subtitle">Governança Core</span>
+        </div>
+      </div>
+
+      <ul class="nav-menu">
+        <li id="nav-item-usuarios" class="nav-item active">
+          <button id="nav-btn-usuarios" type="button">
+            <div class="nav-item-content">
+              <span>👥</span>
+              <span class="nav-item-text">Aprovação & Licenças</span>
+            </div>
+            <span id="badge-count-usuarios" class="nav-badge">0</span>
+          </button>
+        </li>
+
+        <li id="nav-item-erros" class="nav-item">
+          <button id="nav-btn-erros" type="button">
+            <div class="nav-item-content">
+              <span>🛡️</span>
+              <span class="nav-item-text">Erros do Sistema</span>
+            </div>
+            <span id="badge-count-erros" class="nav-badge">0</span>
+          </button>
+        </li>
+
+        <li id="nav-item-feedbacks" class="nav-item">
+          <button id="nav-btn-feedbacks" type="button">
+            <div class="nav-item-content">
+              <span>💬</span>
+              <span class="nav-item-text">Feedbacks dos Usuários</span>
+            </div>
+            <span id="badge-count-feedbacks" class="nav-badge">0</span>
+          </button>
+        </li>
+
+        <li id="nav-item-noticias" class="nav-item">
+          <button id="nav-btn-noticias" type="button">
+            <div class="nav-item-content">
+              <span>📰</span>
+              <span class="nav-item-text">Notícias aos Devs</span>
+            </div>
+            <span id="badge-count-noticias" class="nav-badge">0</span>
+          </button>
+        </li>
+      </ul>
+
+      <!-- Perfil Logado no Rodapé da Sidebar -->
+      <div style="padding-top:1.25rem;border-top:var(--glass-border-subtle);display:flex;align-items:center;justify-content:space-between;gap:0.5rem;">
+        <div style="display:flex;flex-direction:column;overflow:hidden;">
+          <span id="user-role-display" style="font-size:0.75rem;font-weight:700;color:var(--color-primary);text-transform:uppercase;">CEO</span>
+          <span id="user-email-display" class="user-name" style="font-size:0.8rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">ceo@systekna.com</span>
+        </div>
+        <button id="logout-btn" type="button" class="btn btn-secondary btn-sm" title="Encerrar sessão" style="padding:0.35rem 0.65rem;">
+          🚪
+        </button>
+      </div>
+    </aside>
+
+    <!-- TOPBAR -->
+    <header class="topbar">
+      <!-- Ilha Viva -->
+      <div id="live-island" class="live-island">
+        <div class="status-dot"></div>
+        <span id="live-island-text">Inicializando telemetria de governança...</span>
+      </div>
+
+      <!-- Links Rápidos -->
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <span class="badge badge-info" style="font-size:0.75rem;">Firebase: systekna-feedback</span>
+        <a href="https://github.com/CelsoAlmeidaLF/governanca-systekna" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">
+          🐙 GitHub Repo
+        </a>
+      </div>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="main-content">
+
+      <!-- ====================================================
+           ABA 1: APROVAÇÃO DE USUÁRIOS & GESTÃO DE PERMISSÕES
+           ==================================================== -->
+      <section id="section-usuarios" class="content-section active">
+        <div style="margin-bottom:1.5rem;">
+          <h2 style="font-size:1.6rem;font-weight:700;color:#ffffff;letter-spacing:-0.02em;">Aprovação de Estabelecimentos & Licenciamento</h2>
+          <p style="font-size:0.9rem;color:var(--text-muted);">Controle soberano de cadastros (CNPJ opcional), autorização de Mesas vs Balcão e Kill-Switch remoto.</p>
+        </div>
+
+        <!-- Grid de Métricas -->
+        <div class="metrics-grid">
+          <div class="glass-card stat-card">
+            <div class="stat-header">
+              <span>SOLICITAÇÕES PENDENTES</span>
+              <span>⏳</span>
+            </div>
+            <div id="user-pendentes-count" class="stat-value">0</div>
+            <div class="stat-subtext">Aguardando homologação de governança</div>
+          </div>
+
+          <div class="glass-card stat-card">
+            <div class="stat-header">
+              <span>COMÉRCIOS HOMOLOGADOS</span>
+              <span>🏢</span>
+            </div>
+            <div id="user-aprovados-count" class="stat-value">0</div>
+            <div class="stat-subtext">Operando em conformidade</div>
+          </div>
+
+          <div class="glass-card stat-card">
+            <div class="stat-header">
+              <span>SALÃO & MESAS LIBERADAS</span>
+              <span>🍽️</span>
+            </div>
+            <div id="user-com-mesas-count" class="stat-value">0</div>
+            <div class="stat-subtext">Módulo de comandas autorizado</div>
+          </div>
+
+          <div class="glass-card stat-card">
+            <div class="stat-header">
+              <span>MODO BALCÃO PURO</span>
+              <span>⚡</span>
+            </div>
+            <div id="user-sem-mesas-count" class="stat-value">0</div>
+            <div class="stat-subtext">Lojas de Salgados / Adegas (sem mesas)</div>
+          </div>
+        </div>
+
+        <!-- Sub-Navegação de Abas -->
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1.5rem;border-bottom:var(--glass-border-subtle);padding-bottom:0.75rem;">
+          <button id="subtab-btn-solicitacoes" type="button" class="btn btn-secondary active">
+            📋 Fila de Solicitações de Novos Gestores
+          </button>
+          <button id="subtab-btn-tenants" type="button" class="btn btn-secondary">
+            🏢 Tenants & Licenças Ativas (Governança Avançada)
+          </button>
+        </div>
+
+        <!-- Painel 1: Solicitações -->
+        <div id="panel-solicitacoes">
+          <div class="toolbar">
+            <div class="search-input-group">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="user-search-input" placeholder="Buscar por usuário, comércio, CNPJ ou tipo...">
+            </div>
+
+            <div style="display:flex;align-items:center;gap:0.75rem;">
+              <select id="user-filter-status" class="filter-select">
+                <option value="pendente" selected>Apenas Pendentes</option>
+                <option value="aprovado">Apenas Aprovados</option>
+                <option value="reprovado">Apenas Reprovados</option>
+                <option value="todos">Todos os Status</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="solicitacoes-list-container">
+            <!-- Inserido dinamicamente via UserApprovalView -->
+          </div>
+        </div>
+
+        <!-- Painel 2: Tenants Ativos -->
+        <div id="panel-tenants" style="display:none;">
+          <div id="tenants-list-container">
+            <!-- Inserido dinamicamente via UserApprovalView -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ====================================================
+           ABA 2: GESTÃO DE ERROS DO SISTEMA (TELEMETRIA)
+           ==================================================== -->
+      <section id="section-erros" class="content-section">
+        <div style="margin-bottom:1.5rem;">
+          <h2 style="font-size:1.6rem;font-weight:700;color:#ffffff;letter-spacing:-0.02em;">Central de Erros & Telemetria em Tempo Real</h2>
+          <p style="font-size:0.9rem;color:var(--text-muted);">Observabilidade, agrupamento inteligente de falhas sanitizadas e abertura direta de issues no GitHub.</p>
+        </div>
+
+        <!-- Grid de Métricas de Erro -->
+        <div class="metrics-grid">
+          <div class="glass-card stat-card">
+            <div class="stat-header">
+              <span>ERROS ABERTOS</span>
+              <span>⚠️</span>
+            </div>
+            <div id="err-abertos" class="stat-value" style="color:#ff5277;">0</div>
+            <div class="stat-subtext">Ocorrências aguardando correção</div>
+          </div>
+
+          <div class="glass-card stat-card">
+            <div class="stat-header">
+              <span>ÚLTIMAS 24 HORAS</span>
+              <span>🔥</span>
+            </div>
+            <div id="err-24h" class="stat-value">0</div>
+            <div class="stat-subtext">Incidentes em runtime recente</div>
+          </div>
+
+          <div class="glass-card stat-card">
+            <div class="stat-header">
+              <span>RESOLVIDOS</span>
+              <span>✓</span>
+            </div>
+            <div id="err-resolvidos" class="stat-value" style="color:var(--color-success);">0</div>
+            <div class="stat-subtext">Falhas homologadas e tratadas</div>
+          </div>
+
+          <div class="glass-card stat-card">
+            <div class="stat-header">
+              <span>TOTAL DE REGISTROS</span>
+              <span>📊</span>
+            </div>
+            <div id="err-total" class="stat-value">0</div>
+            <div class="stat-subtext">Volume global de telemetria</div>
+          </div>
+        </div>
+
+        <!-- Toolbar de Erros -->
+        <div class="toolbar">
+          <div class="search-input-group">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="err-search-input" placeholder="Buscar por mensagem, módulo, versão ou stack...">
+          </div>
+
+          <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+            <select id="err-filter-status" class="filter-select">
+              <option value="abertos" selected>Erros Abertos</option>
+              <option value="resolvidos">Erros Resolvidos</option>
+              <option value="todos">Todos</option>
+            </select>
+
+            <select id="err-filter-app" class="filter-select">
+              <option value="">Todos os Apps</option>
+              <option value="BARGESTAO">BarGestão Aero</option>
+              <option value="CAMBIO">Câmbio Sim</option>
+              <option value="CRIPTO">Cripto Sim</option>
+              <option value="LIVROCAIXA">Livro-Caixa</option>
+              <option value="TAXOMETRO">Taxômetro</option>
+              <option value="INVEST">Investimentos</option>
+            </select>
+
+            <select id="err-filter-modulo" class="filter-select">
+              <option value="">Todos os Módulos</option>
+              <option value="storage_opfs">Storage / OPFS</option>
+              <option value="bluetooth_escpos">Bluetooth / ESC/POS</option>
+              <option value="crypto">Criptografia / WebCrypto</option>
+              <option value="order">Pedidos & Comandas</option>
+              <option value="dom">Interface & DOM</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="error-list-container">
+          <!-- Inserido dinamicamente via ErrorManagementView -->
+        </div>
+      </section>
+
+      <!-- ====================================================
+           ABA 3: FEEDBACKS DOS USUÁRIOS
+           ==================================================== -->
+      <section id="section-feedbacks" class="content-section">
+        <div style="margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <h2 style="font-size:1.6rem;font-weight:700;color:#ffffff;letter-spacing:-0.02em;">Feedbacks & Avaliações dos Usuários</h2>
+            <p style="font-size:0.9rem;color:var(--text-muted);">Sugestões, notas de satisfação (1 a 5 estrelas) e relatos de experiência de campo.</p>
+          </div>
+
+          <button id="fb-export-csv-btn" class="btn btn-secondary">
+            📥 Exportar Relatório em CSV
+          </button>
+        </div>
+
+        <!-- Grid de Métricas de Feedback -->
+        <div class="metrics-grid">
+          <div class="glass-card stat-card">
+            <div class="stat-header">
+              <span>MÉDIA DE SATISFAÇÃO</span>
+              <span>⭐</span>
+            </div>
+            <div class="stat-value">
+              <span id="fb-media">0.0</span>
+              <span style="font-size:1.1rem;color:#ffd700;">/ 5.0</span>
+            </div>
+            <div class="stat-subtext">Avaliação ponderada dos usuários</div>
+          </div>
+
+          <div class="glass-card stat-card">
+            <div class="stat-header">
+              <span>NOVOS NÃO LIDOS</span>
+              <span>📬</span>
+            </div>
+            <div id="fb-novos" class="stat-value" style="color:var(--color-primary);">0</div>
+            <div class="stat-subtext">Aguardando análise da equipe</div>
+          </div>
+
+          <div class="glass-card stat-card">
+            <div class="stat-header">
+              <span>TOTAL DE FEEDBACKS</span>
+              <span>💬</span>
+            </div>
+            <div id="fb-total" class="stat-value">0</div>
+            <div class="stat-subtext">Coletados em todo o ecossistema</div>
+          </div>
+
+          <div class="glass-card stat-card">
+            <div class="stat-header">
+              <span>DISTRIBUIÇÃO DE NOTAS</span>
+              <span>📈</span>
+            </div>
+            <div id="fb-distribuicao" style="display:flex;flex-direction:column;gap:0.25rem;margin-top:0.4rem;">
+              <!-- Barras de notas preenchidas via FeedbackView -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Toolbar de Feedbacks -->
+        <div class="toolbar">
+          <div class="search-input-group">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="fb-search-input" placeholder="Buscar em mensagens, e-mails ou estabelecimentos...">
+          </div>
+
+          <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+            <select id="fb-filter-status" class="filter-select">
+              <option value="todos">Todos os Status</option>
+              <option value="novos">Apenas Novos</option>
+              <option value="lidos">Apenas Lidos</option>
+            </select>
+
+            <select id="fb-filter-tipo" class="filter-select">
+              <option value="">Todos os Tipos</option>
+              <option value="sugestao">Sugestão</option>
+              <option value="elogio">Elogio</option>
+              <option value="problema">Problema</option>
+              <option value="duvida">Dúvida</option>
+            </select>
+
+            <select id="fb-filter-app" class="filter-select">
+              <option value="">Todos os Apps</option>
+              <option value="BARGESTAO">BarGestão Aero</option>
+              <option value="CAMBIO">Câmbio Sim</option>
+              <option value="CRIPTO">Cripto Sim</option>
+              <option value="LIVROCAIXA">Livro-Caixa</option>
+              <option value="TAXOMETRO">Taxômetro</option>
+              <option value="INVEST">Investimentos</option>
+              <option value="IDENTIDADE">Identidade Systekna</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="feedback-list-container">
+          <!-- Inserido dinamicamente via FeedbackView -->
+        </div>
+      </section>
+
+      <!-- ====================================================
+           ABA 4: NOTÍCIAS AOS DESENVOLVEDORES
+           ==================================================== -->
+      <section id="section-noticias" class="content-section">
+        <div style="margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
+          <div>
+            <h2 style="font-size:1.6rem;font-weight:700;color:#ffffff;letter-spacing:-0.02em;">Canal de Notícias & Diretrizes aos Desenvolvedores</h2>
+            <p style="font-size:0.9rem;color:var(--text-muted);">Comunicados de arquitetura, releases de código, patches de segurança e orientações de governança.</p>
+          </div>
+
+          <button id="nova-noticia-btn" class="btn btn-primary">
+            ✍️ Publicar Comunicado aos Devs
+          </button>
+        </div>
+
+        <!-- Toolbar de Notícias -->
+        <div class="toolbar">
+          <div class="search-input-group">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="news-search-input" placeholder="Buscar comunicados por título, tags ou conteúdo...">
+          </div>
+
+          <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+            <select id="news-filter-categoria" class="filter-select">
+              <option value="todas">Todas as Categorias</option>
+              <option value="arquitetura">Arquitetura & ADR</option>
+              <option value="release">Releases / Versões</option>
+              <option value="seguranca">Segurança & Hardening</option>
+              <option value="cloud">Cloud & Firebase</option>
+              <option value="governanca">Governança</option>
+            </select>
+
+            <select id="news-filter-prioridade" class="filter-select">
+              <option value="todas">Todas as Prioridades</option>
+              <option value="info">Informativo</option>
+              <option value="warning">Aviso / Atenção</option>
+              <option value="critical">Urgente / Crítico</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="dev-news-container">
+          <!-- Inserido dinamicamente via DevNewsView -->
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ==========================================
+       MODAL: PUBLICAR NOTÍCIA AOS DESENVOLVEDORES
+       ========================================== -->
+  <div id="noticia-modal-backdrop" class="modal-backdrop">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3 style="font-size:1.25rem;font-weight:700;color:#ffffff;">Publicar Comunicado Técnico aos Desenvolvedores</h3>
+        <button id="noticia-modal-close" class="modal-close-btn">&times;</button>
+      </div>
+
+      <form id="noticia-form" style="display:flex;flex-direction:column;gap:1.1rem;">
+        <div class="form-group">
+          <label class="form-label" for="noticia-titulo">Título do Comunicado</label>
+          <input type="text" id="noticia-titulo" class="form-input" placeholder="Ex: Diretriz de Isolamento Zero-Knowledge e Criptografia AES-GCM" required>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div class="form-group">
+            <label class="form-label" for="noticia-categoria">Categoria Técnica</label>
+            <select id="noticia-categoria" class="form-input">
+              <option value="arquitetura" selected>🏛️ Arquitetura & ADR</option>
+              <option value="release">🚀 Release / Versão</option>
+              <option value="seguranca">🛡️ Segurança & Hardening</option>
+              <option value="cloud">☁️ Infraestrutura & Firebase</option>
+              <option value="governanca">⚖️ Diretrizes de Governança</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="noticia-prioridade">Nível de Prioridade</label>
+            <select id="noticia-prioridade" class="form-input">
+              <option value="info" selected>Informativo (Info)</option>
+              <option value="warning">Aviso Técnico (Warning)</option>
+              <option value="critical">Urgente / Crítico (Critical)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="noticia-resumo">Resumo Executivo (1 a 2 linhas)</label>
+          <input type="text" id="noticia-resumo" class="form-input" placeholder="Ex: Novo middleware sanitizador impede vazamento de dados em erros.">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="noticia-conteudo">Conteúdo Técnico Completo (Suporta formatação e blocos)</label>
+          <textarea id="noticia-conteudo" class="form-input" rows="7" placeholder="Descreva os detalhes da especificação, exemplos de código, links de PRs e orientações de engenharia..." required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="noticia-tags">Tags Técnicas (separadas por vírgula)</label>
+          <input type="text" id="noticia-tags" class="form-input" placeholder="hexagonal, pwa, security, firebase">
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:flex-end;gap:0.75rem;margin-top:0.75rem;">
+          <button type="button" onclick="document.getElementById('noticia-modal-backdrop').classList.remove('open')" class="btn btn-secondary">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary">
+            🚀 Publicar Comunicado
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Script Principal Modular -->
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
