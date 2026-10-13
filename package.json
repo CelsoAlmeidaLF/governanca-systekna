@@ -1,0 +1,21 @@
+{
+  "name": "governanca-systekna",
+  "version": "1.0.0",
+  "description": "Painel de Governança Systekna — CEO & Engenheiro Chefe (Aprovação de Usuários, Permissões, Feedbacks, Telemetria e Notícias Devs)",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "start": "python3 -m http.server 8080 --directory src"
+  },
+  "keywords": [
+    "systekna",
+    "governanca",
+    "firebase",
+    "hexagonal-architecture",
+    "glassmorphism",
+    "telemetry",
+    "pos"
+  ],
+  "author": "Systekna Engineering Core",
+  "license": "MIT"
+}
