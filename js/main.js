@@ -1,156 +1,94 @@
-import { FirebaseAuthAdapter } from './infrastructure/adapters/FirebaseAuthAdapter.js?v=1.0.6';
-import { FirestoreGovernanceAdapter } from './infrastructure/adapters/FirestoreGovernanceAdapter.js?v=1.0.6';
-import { AuthService } from './application/AuthService.js?v=1.0.6';
-import { FeedbackService } from './application/FeedbackService.js?v=1.0.6';
-import { ErrorManagementService } from './application/ErrorManagementService.js?v=1.0.6';
-import { UserApprovalService } from './application/UserApprovalService.js?v=1.0.6';
-import { DevNewsService } from './application/DevNewsService.js?v=1.0.6';
-import { AuthView } from './ui/views/AuthView.js?v=1.0.6';
-import { FeedbackView } from './ui/views/FeedbackView.js?v=1.0.6';
-import { ErrorManagementView } from './ui/views/ErrorManagementView.js?v=1.0.6';
-import { UserApprovalView } from './ui/views/UserApprovalView.js?v=1.0.6';
-import { DevNewsView } from './ui/views/DevNewsView.js?v=1.0.6';
-import { GovernanceAppController } from './ui/controllers/GovernanceAppController.js?v=1.0.6';
+/**
+ * Governança Systekna — composição (arquitetura hexagonal) e inicialização.
+ * Abre pelo cofre do kit de segurança (PIN FINANC ou biometria), como o painel de feedback:
+ * o kit também bloqueia iframe de outro site e registra o service worker (sw.js).
+ */
+import { FirebaseAuthAdapter } from './infrastructure/adapters/FirebaseAuthAdapter.js';
+import { FirestoreGovernanceAdapter } from './infrastructure/adapters/FirestoreGovernanceAdapter.js';
+import { AuthService } from './application/AuthService.js';
+import { FeedbackService } from './application/FeedbackService.js';
+import { ErrorManagementService } from './application/ErrorManagementService.js';
+import { UserApprovalService } from './application/UserApprovalService.js';
+import { DevNewsService } from './application/DevNewsService.js';
+import { AuthView } from './ui/views/AuthView.js';
+import { FeedbackView } from './ui/views/FeedbackView.js';
+import { ErrorManagementView } from './ui/views/ErrorManagementView.js';
+import { UserApprovalView } from './ui/views/UserApprovalView.js';
+import { DevNewsView } from './ui/views/DevNewsView.js';
+import { GovernanceAppController } from './ui/controllers/GovernanceAppController.js';
+import { SessaoController } from './ui/controllers/SessaoController.js';
+import { notificarErro } from './ui/utils/notificar.js';
+import { iniciarModo } from './ui/utils/modo.js';
+import { iniciarDialogos } from './ui/utils/dialogo.js';
+import { auth, db, authSdk, firestoreSdk } from './infrastructure/config/FirebaseApp.js';
 
-// Registro do Service Worker (PWA)
-if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then((reg) => console.log('[PWA] Service Worker registrado:', reg.scope))
-      .catch((err) => console.warn('[PWA] Falha no Service Worker:', err));
-  });
-}
-
-// Suporte à Instalação PWA (Mobile, Tablet & Desktop)
-let deferredInstallPrompt = null;
-const pwaInstallBtn = document.getElementById('pwa-install-btn');
-
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredInstallPrompt = e;
-  if (pwaInstallBtn) {
-    pwaInstallBtn.style.display = 'inline-flex';
+// Envolve ações de escrita: qualquer falha (rede, regras do Firestore) aparece para o operador
+// e a tela é recarregada do servidor, descartando mudanças otimistas feitas nas entidades em memória.
+let recarregarAposFalha = null;
+const comTratamentoDeErro = (acao) => async (...args) => {
+  try {
+    return await acao(...args);
+  } catch (err) {
+    notificarErro(err);
+    if (recarregarAposFalha) await recarregarAposFalha();
+    return undefined;
   }
+};
+
+iniciarModo();
+iniciarDialogos();
+
+// 1. Adaptadores de infraestrutura
+const authAdapter = new FirebaseAuthAdapter({ auth, sdk: authSdk });
+const firestoreAdapter = new FirestoreGovernanceAdapter({ db, fs: firestoreSdk });
+
+// 2. Serviços de aplicação
+const authService = new AuthService(authAdapter);
+const feedbackService = new FeedbackService(firestoreAdapter);
+const errorService = new ErrorManagementService(firestoreAdapter);
+const userApprovalService = new UserApprovalService(firestoreAdapter);
+const devNewsService = new DevNewsService(firestoreAdapter);
+
+// 3. Views
+let controller = null;
+const feedbackView = new FeedbackView({
+  onMarcarLido: comTratamentoDeErro((id, lido) => feedbackService.marcarComoLido(id, lido)),
+  onExcluir: comTratamentoDeErro((id) => feedbackService.excluirFeedback(id)),
+  onExportarCsv: () => { if (controller) controller.exportarCsvFeedbacks(); }
+});
+const errorView = new ErrorManagementView({
+  onAlternarStatus: comTratamentoDeErro((grupo, resolvido) => errorService.alternarStatusGrupo(grupo, resolvido)),
+  onExcluirGrupo: comTratamentoDeErro((grupo) => errorService.excluirGrupo(grupo))
+});
+const userApprovalView = new UserApprovalView({
+  onAprovar: comTratamentoDeErro((solicitacao, opcoes) => userApprovalService.aprovarSolicitacao(solicitacao, opcoes)),
+  onReprovar: comTratamentoDeErro((solicitacao, motivo) => userApprovalService.reprovarSolicitacao(solicitacao, { motivo })),
+  onAlternarKillSwitch: comTratamentoDeErro((tenantId, bloquear) => userApprovalService.alternarKillSwitch(tenantId, bloquear)),
+  onAtualizarModulos: comTratamentoDeErro((tenant, novosModulos) => userApprovalService.atualizarModulosTenant(tenant, novosModulos)),
+  onAtualizarPlano: comTratamentoDeErro((tenant, novoPlano) => userApprovalService.atualizarPlanoTenant(tenant, novoPlano))
+});
+const devNewsView = new DevNewsView({
+  onPublicarNoticia: (dados) => devNewsService.publicarNoticia(dados),
+  onExcluirNoticia: comTratamentoDeErro((id) => devNewsService.excluirNoticia(id))
 });
 
-if (pwaInstallBtn) {
-  pwaInstallBtn.addEventListener('click', async () => {
-    if (!deferredInstallPrompt) return;
-    deferredInstallPrompt.prompt();
-    const choice = await deferredInstallPrompt.userChoice;
-    console.log('[PWA] Escolha do usuário:', choice.outcome);
-    deferredInstallPrompt = null;
-    pwaInstallBtn.style.display = 'none';
-  });
-}
-
-// Inicialização Principal da Aplicação
-document.addEventListener('DOMContentLoaded', async () => {
-  // 1. Adapters de Infraestrutura
-  const authAdapter = new FirebaseAuthAdapter();
-  const firestoreAdapter = new FirestoreGovernanceAdapter();
-
-  // 2. Application Services
-  const authService = new AuthService(authAdapter);
-  const feedbackService = new FeedbackService(firestoreAdapter);
-  const errorService = new ErrorManagementService(firestoreAdapter);
-  const userApprovalService = new UserApprovalService(firestoreAdapter);
-  const devNewsService = new DevNewsService(firestoreAdapter);
-
-  let controller = null;
-
-  // 3. UI Views
-  const authView = new AuthView({
-    onLogin: async (email, password) => {
-      const user = await authService.login(email, password);
-      authView.renderUserState(user);
-      if (controller) await controller.carregarTodosDados();
-    },
-    onRegister: async (email, password, displayName) => {
-      const user = await authService.cadastrarUsuario(email, password, displayName);
-      authView.renderUserState(user);
-      if (controller) await controller.carregarTodosDados();
-    },
-    onLogout: async () => {
-      await authService.logout();
-      authView.renderUserState(null);
-    },
-    onResetPassword: async (email) => {
-      return await authService.solicitarRecuperacaoSenha(email);
-    }
-  });
-
-  const feedbackView = new FeedbackView({
-    onMarcarLido: async (id, lido) => {
-      await feedbackService.marcarComoLido(id, lido);
-    },
-    onExcluir: async (id) => {
-      await feedbackService.excluirFeedback(id);
-    },
-    onExportarCsv: () => {
-      if (controller) controller.exportarCsvFeedbacks();
-    }
-  });
-
-  const errorView = new ErrorManagementView({
-    onAlternarStatus: async (grupo, resolvido) => {
-      await errorService.alternarStatusGrupo(grupo, resolvido);
-    },
-    onExcluirGrupo: async (grupo) => {
-      await errorService.excluirGrupo(grupo);
-    }
-  });
-
-  const userApprovalView = new UserApprovalView({
-    onAprovar: async (solicitacao, opcoes) => {
-      await userApprovalService.aprovarSolicitacao(solicitacao, opcoes);
-    },
-    onReprovar: async (solicitacao, motivo) => {
-      await userApprovalService.reprovarSolicitacao(solicitacao, { motivo });
-    },
-    onAlternarKillSwitch: async (usuario, bloquear) => {
-      await userApprovalService.alternarKillSwitch(usuario, bloquear);
-    },
-    onAtualizarModulos: async (tenant, novosModulos) => {
-      await userApprovalService.atualizarModulosTenant(tenant, novosModulos);
-    },
-    onAtualizarPlano: async (tenant, novoPlano) => {
-      await userApprovalService.atualizarPlanoTenant(tenant, novoPlano);
-    }
-  });
-
-  const devNewsView = new DevNewsView({
-    onPublicarNoticia: async (dados) => {
-      await devNewsService.publicarNoticia(dados);
-    },
-    onExcluirNoticia: async (id) => {
-      await devNewsService.excluirNoticia(id);
-    }
-  });
-
-  // 4. Controller
-  controller = new GovernanceAppController({
-    authService,
-    feedbackService,
-    errorService,
-    userApprovalService,
-    devNewsService,
-    dataAdapter: firestoreAdapter,
-    authView,
-    feedbackView,
-    errorView,
-    userApprovalView,
-    devNewsView
-  });
-
-  // 5. Observa estado de autenticação
-  authService.observarEstadoAutenticacao(async (user) => {
-    authView.renderUserState(user);
-    if (user) {
-      await controller.carregarTodosDados();
-    }
-  });
-
-  // Tenta inicializar auth prévia
-  await authAdapter.inicializar();
+// 4. Controladores
+controller = new GovernanceAppController({
+  feedbackService, errorService, userApprovalService, devNewsService,
+  dataAdapter: firestoreAdapter,
+  feedbackView, errorView, userApprovalView, devNewsView
 });
+recarregarAposFalha = () => controller.carregarTodosDados();
+
+let sessao = null;
+const authView = new AuthView({
+  onEntrar: (email, senha, guardar) => sessao.entrar(email, senha, guardar),
+  onEsqueci: (email) => sessao.esqueci(email)
+});
+sessao = new SessaoController({ authService, dataAdapter: firestoreAdapter, authView, appController: controller });
+
+// 5. Cofre: só depois do PIN/biometria o painel tenta entrar
+await window.vaultReady;
+sessao.secoesConfiguracoes();
+authService.observarEstadoAutenticacao((user) => sessao.aoMudarLogin(user));
+await authAdapter.inicializar();

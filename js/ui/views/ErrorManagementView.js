@@ -1,4 +1,6 @@
 import { Icons } from '../icons/Icons.js';
+import { escapeHtml } from '../utils/escapeHtml.js';
+import { confirmar, pedirTexto } from '../utils/dialogo.js';
 
 /**
  * UI View: ErrorManagementView
@@ -65,19 +67,19 @@ export class ErrorManagementView {
       return `
         <div class="glass-card" style="margin-bottom:1rem;display:flex;flex-direction:column;gap:0.85rem;">
           <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
-            <div style="display:flex;align-items:center;gap:0.65rem;">
+            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:0.65rem;">
               ${statusBadge}
-              <span class="badge badge-neutral">${g.app}</span>
-              <span class="badge badge-info">${g.modulo}</span>
+              <span class="badge badge-neutral">${escapeHtml(g.app)}</span>
+              <span class="badge badge-info">${escapeHtml(g.modulo)}</span>
               <span class="badge badge-warn">${g.totalOcorrencias} ${g.totalOcorrencias > 1 ? 'ocorrências' : 'ocorrência'}</span>
             </div>
             <div style="font-size:0.8rem;color:var(--text-dim);">
-              Última falha: ${new Date(g.ultimaOcorrencia).toLocaleString('pt-BR')} (versão ${g.versao})
+              Última falha: ${new Date(g.ultimaOcorrencia).toLocaleString('pt-BR')} (versão ${escapeHtml(g.versao)})
             </div>
           </div>
 
           <div>
-            <h4 style="color:#ffffff;font-size:1.05rem;font-weight:600;margin-bottom:0.4rem;">
+            <h4 style="color:var(--ink);font-size:1.05rem;font-weight:600;margin-bottom:0.4rem;">
               ${this._sanitizarHtml(g.mensagem)}
             </h4>
             <div style="font-size:0.8rem;color:var(--text-muted);">
@@ -99,8 +101,8 @@ export class ErrorManagementView {
               Assinatura: ${this._sanitizarHtml(g.assinatura)}
             </div>
 
-            <div style="display:flex;align-items:center;gap:0.5rem;">
-              <a href="${linkGitHub}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" title="Criar issue no GitHub do repositório">
+            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+              <a href="${escapeHtml(linkGitHub)}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" title="Criar issue no GitHub do repositório">
                 ${Icons.svg('github', { size: 14 })} Abrir Issue no GitHub
               </a>
 
@@ -127,10 +129,10 @@ export class ErrorManagementView {
     });
 
     this._container.querySelectorAll('.excluir-grupo-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', async () => {
         const idx = Number(btn.getAttribute('data-index'));
         const grupo = grupos[idx];
-        if (confirm(`Deseja excluir todas as ${grupo.totalOcorrencias} ocorrências deste erro?`)) {
+        if (await confirmar(`As ${grupo.totalOcorrencias} ocorrências deste erro são apagadas do Firestore.`, { titulo: 'Excluir erro?', ok: 'Excluir', perigo: true })) {
           if (this._onExcluirGrupo) this._onExcluirGrupo(grupo);
         }
       });
@@ -138,8 +140,6 @@ export class ErrorManagementView {
   }
 
   _sanitizarHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str || '';
-    return div.innerHTML;
+    return escapeHtml(str);
   }
 }

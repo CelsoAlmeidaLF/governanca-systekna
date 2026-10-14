@@ -1,0 +1,9 @@
+/* Fonte servida pelo próprio painel (sem Google): Open Sans variável (300–800), licença SIL OFL 1.1 (OFL-OpenSans.txt). */
+@font-face {
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 300 800;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url(open-sans.woff2) format('woff2');
+}

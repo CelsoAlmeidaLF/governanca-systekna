@@ -1,655 +1,323 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="vault-locked" data-vault-version="1.2.0" data-vault-app="governanca-systekna" data-vault-name="Governança">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Governança da Systekna — CEO & Engenheiro Chefe</title>
-  <meta name="description" content="Painel Soberano de Governança, Homologação de Usuários, Telemetria de Erros, Gestão de Feedbacks e Notícias aos Desenvolvedores da Systekna.">
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
-  
-  <!-- PWA & Mobile Meta Tags -->
-  <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#070c18">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Governança">
-  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
-
-  <!-- Fontes Google Fonts Modernas -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Estilos Aero Glassmorphism 2.0 -->
-  <link rel="stylesheet" href="css/tokens.css?v=1.0.6">
-  <link rel="stylesheet" href="css/layout.css?v=1.0.6">
-  <link rel="stylesheet" href="css/components.css?v=1.0.6">
-  <link rel="stylesheet" href="css/animations.css?v=1.0.6">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com https://www.google.com; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self' https://firestore.googleapis.com https://content-firebaseappcheck.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://www.google.com; frame-src https://www.google.com; img-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; worker-src 'self'; manifest-src 'self'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#DCEBFA" id="metaTheme">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Governança">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Governança Systekna</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=2">
+<link rel="icon" href="favicon.ico?v=2" sizes="any">
+<link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png?v=2">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=2">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png?v=2">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="stk-pkg-secure-ui.css">
+<link rel="stylesheet" href="css/aero.css">
 </head>
 <body>
+<div class="sky" aria-hidden="true"></div>
+<div class="orbs" aria-hidden="true"><i class="o1"></i><i class="o2"></i><i class="o3"></i></div>
 
-  <!-- Backdrop Translúcido para Mobile/Tablet Drawer -->
-  <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+<!-- ═════ ENTRAR ═════ -->
+<section class="entrar" id="telaEntrar" hidden>
+  <div class="marca">
+    <span class="avatar" aria-hidden="true"><i data-icon="shield" data-size="20"></i></span>
+    <div>
+      <div class="eyebrow">Governança Systekna</div>
+      <h1>Painel</h1>
+    </div>
+    <button class="ib" type="button" id="btnModoEntrar" aria-label="Trocar modo: claro, escuro ou luz ambiente"></button>
+  </div>
+  <p class="lede">Homologação de estabelecimentos, licenças, erros, feedbacks e comunicados aos desenvolvedores.</p>
+  <form class="glass" id="formEntrar" novalidate>
+    <label class="f">E-mail
+      <input type="email" id="email" autocomplete="username" required>
+    </label>
+    <label class="f">Senha
+      <input type="password" id="senha" autocomplete="current-password" required>
+    </label>
+    <label class="lembrar"><input type="checkbox" id="guardar" checked> Guardar e-mail e senha neste aparelho, protegidos pelo PIN e pela biometria</label>
+    <button class="btn btn-primary btn-block" type="submit" id="btnEntrar">Entrar</button>
+    <button class="btn btn-ghost" type="button" id="btnEsqueci">Esqueci a senha</button>
+    <p class="msg" id="msgEntrar" role="status" aria-live="polite"></p>
+  </form>
+  <p class="note">Protegido por reCAPTCHA. Valem a <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Privacidade</a> e os <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">Termos</a> do Google.</p>
+</section>
 
-  <!-- ==========================================
-       TELA DE AUTENTICAÇÃO (FIREBASE AUTH)
-       ========================================== -->
-  <div id="auth-wrapper" class="auth-wrapper">
-    <div class="auth-card">
-      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
-        <div class="brand-logo">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        </div>
-        <div>
-          <h1 style="font-size:1.4rem;font-weight:700;color:#ffffff;letter-spacing:-0.02em;">Governança Systekna</h1>
-          <p style="font-size:0.75rem;color:var(--color-primary);text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">CEO & Engenheiro Chefe</p>
+<!-- ═════ PAINEL ═════ -->
+<div id="telaPainel" hidden>
+<!-- Ilha viva: o que pede atenção agora -->
+<div class="island" id="island" role="button" tabindex="0" aria-expanded="false" aria-label="Destaque do painel">
+  <div class="line"><span class="pulse"></span><span class="it" id="ilhaT">Conectando…</span><b class="num" id="ilhaV"></b></div>
+  <div class="more"><div><p id="ilhaD"></p><button class="btn btn-primary btn-sm btn-block" type="button" id="ilhaGo">Ver agora</button></div></div>
+</div>
+
+<main class="app" id="app">
+
+  <header class="top">
+    <div class="vp-bar" data-vault-profile-slot></div>
+    <span class="avatar" id="avatar" aria-hidden="true">?</span>
+    <div class="who">
+      <div class="eyebrow">Governança Systekna</div>
+      <h1 id="ola">Olá</h1>
+      <p class="status-login" id="statusLogin"><span class="pt"></span><span id="statusTexto">Conectando…</span></p>
+    </div>
+    <button class="ib" type="button" id="btnModo" aria-label="Trocar modo: claro, escuro ou luz ambiente"></button>
+  </header>
+
+  <div class="seg big" id="fAba" role="tablist" aria-label="Seção"><span class="ind"></span>
+    <button type="button" role="tab" data-tab="usuarios" aria-selected="true"><i data-icon="user" data-size="16"></i>Licenças<span class="cont" id="badge-count-usuarios"></span></button>
+    <button type="button" role="tab" data-tab="erros" aria-selected="false"><i data-icon="alert" data-size="16"></i>Erros<span class="cont" id="badge-count-erros"></span></button>
+    <button type="button" role="tab" data-tab="feedbacks" aria-selected="false"><i data-icon="message-square" data-size="16"></i>Feedbacks<span class="cont" id="badge-count-feedbacks"></span></button>
+    <button type="button" role="tab" data-tab="noticias" aria-selected="false"><i data-icon="file-text" data-size="16"></i>Comunicados</button>
+  </div>
+  <div class="glass aviso" id="msgPainel" role="status" aria-live="polite" style="margin-top:14px"></div>
+
+  <!-- ═════ LICENÇAS: aprovação de estabelecimentos e tenants ═════ -->
+  <section class="secao" id="section-usuarios">
+    <div class="sec-h"><b>Aprovação &amp; licenças</b><span class="hint">CNPJ opcional · mesas × balcão · kill-switch</span></div>
+    <div class="stat-grid">
+      <div class="glass flat stat ac"><span class="rot">Pendentes <i data-icon="clock" data-size="14"></i></span><b class="num" id="user-pendentes-count">–</b><span class="sub">aguardando homologação</span></div>
+      <div class="glass flat stat pos"><span class="rot">Homologados <i data-icon="check" data-size="14"></i></span><b class="num" id="user-aprovados-count">–</b><span class="sub">operando</span></div>
+      <div class="glass flat stat"><span class="rot">Com mesas <i data-icon="target" data-size="14"></i></span><b class="num" id="user-com-mesas-count">–</b><span class="sub">salão e comandas</span></div>
+      <div class="glass flat stat"><span class="rot">Balcão puro <i data-icon="wallet" data-size="14"></i></span><b class="num" id="user-sem-mesas-count">–</b><span class="sub">salgados, adegas</span></div>
+    </div>
+
+    <div class="seg sub-seg" id="fSubUsuarios" role="tablist" aria-label="Lista" style="margin-top:18px"><span class="ind"></span>
+      <button type="button" role="tab" id="subtab-btn-solicitacoes" data-v="solicitacoes" aria-selected="true">Solicitações</button>
+      <button type="button" role="tab" id="subtab-btn-tenants" data-v="tenants" aria-selected="false">Licenças ativas</button>
+    </div>
+
+    <div id="panel-solicitacoes">
+      <div class="filtros">
+        <div class="linha busca-um">
+          <label class="search"><input type="search" id="user-search-input" placeholder="Buscar usuário, comércio, CNPJ ou tipo" aria-label="Buscar solicitações"></label>
+          <select class="filter-select" id="user-filter-status" aria-label="Status">
+            <option value="pendente" selected>Pendentes</option>
+            <option value="aprovado">Aprovadas</option>
+            <option value="reprovado">Reprovadas</option>
+            <option value="todos">Todas</option>
+          </select>
         </div>
       </div>
+      <div class="lista-cards" id="solicitacoes-list-container"></div>
+    </div>
 
-      <!-- Abas de Alternância: Entrar vs Cadastrar -->
-      <div style="display:flex;align-items:center;background:rgba(10, 16, 30, 0.6);border:var(--glass-border-subtle);border-radius:var(--border-radius-md);padding:0.25rem;gap:0.25rem;">
-        <button type="button" id="tab-auth-login" class="btn btn-secondary btn-sm active" style="flex:1;border-radius:var(--border-radius-sm);background:rgba(0, 210, 255, 0.15);color:#ffffff;border:var(--glass-border-accent);">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon" style="margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Entrar
-        </button>
-        <button type="button" id="tab-auth-register" class="btn btn-secondary btn-sm" style="flex:1;border-radius:var(--border-radius-sm);border:none;background:transparent;color:var(--text-muted);">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon" style="margin-right:4px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Cadastrar Novo Usuário
-        </button>
-      </div>
+    <div id="panel-tenants" hidden>
+      <div class="lista-cards" id="tenants-list-container"></div>
+    </div>
+  </section>
 
-      <div id="login-error" style="display:none;padding:0.75rem 1rem;background:var(--color-danger-bg);border:1px solid rgba(255,23,68,0.35);border-radius:var(--border-radius-sm);color:#ff5277;font-size:0.85rem;"></div>
-
-      <form id="login-form" style="display:flex;flex-direction:column;gap:1rem;">
-        <div id="form-group-name" class="form-group" style="display:none;">
-          <label class="form-label" for="register-name">Nome Completo / Cargo</label>
-          <input type="text" id="register-name" class="form-input" placeholder="Ex: Celso de Almeida (CEO)">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="login-email">E-mail Corporativo</label>
-          <input type="email" id="login-email" class="form-input" placeholder="seu-email@systekna.com" required autocomplete="username">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="login-password">Senha de Segurança (mín. 6 caracteres)</label>
-          <div class="password-input-wrapper">
-            <input type="password" id="login-password" class="form-input" placeholder="••••••••••••" required autocomplete="current-password">
-            <button type="button" id="toggle-login-password-btn" class="password-toggle-btn" aria-label="Visualizar senha" title="Visualizar ou ocultar senha">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-          </div>
-        </div>
-
-        <div id="form-group-confirm-password" class="form-group" style="display:none;">
-          <label class="form-label" for="register-confirm-password">Confirmar Senha</label>
-          <div class="password-input-wrapper">
-            <input type="password" id="register-confirm-password" class="form-input" placeholder="••••••••••••" autocomplete="new-password">
-            <button type="button" id="toggle-confirm-password-btn" class="password-toggle-btn" aria-label="Visualizar senha" title="Visualizar ou ocultar senha">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-            </button>
-          </div>
-        </div>
-
-        <button type="submit" id="login-btn" class="btn btn-primary" style="margin-top:0.5rem;">
-          Acessar Governança Systekna
-        </button>
-      </form>
-
-      <div style="display:flex;flex-direction:column;gap:0.75rem;padding-top:1rem;border-top:var(--glass-border-subtle);text-align:center;">
-        <button type="button" id="demo-login-btn" class="btn btn-secondary btn-sm" style="width:100%;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon" style="margin-right:4px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Acesso Direto (CEO & Engenheiro Chefe)
-        </button>
-        <button type="button" id="reset-password-btn" style="background:transparent;border:none;color:var(--text-dim);font-size:0.8rem;cursor:pointer;text-decoration:underline;">
-          Esqueceu sua senha? Solicitar redefinição
-        </button>
+  <!-- ═════ ERROS: telemetria dos apps ═════ -->
+  <section class="secao" id="section-erros" hidden>
+    <div class="sec-h"><b>Erros &amp; telemetria</b><span class="hint">agrupados pelo mesmo erro</span></div>
+    <div class="stat-grid">
+      <div class="glass flat stat neg"><span class="rot">Abertos <i data-icon="alert" data-size="14"></i></span><b class="num" id="err-abertos">–</b><span class="sub">aguardando correção</span></div>
+      <div class="glass flat stat"><span class="rot">Últimas 24 h <i data-icon="clock" data-size="14"></i></span><b class="num" id="err-24h">–</b><span class="sub">ocorrências recentes</span></div>
+      <div class="glass flat stat pos"><span class="rot">Resolvidos <i data-icon="check" data-size="14"></i></span><b class="num" id="err-resolvidos">–</b><span class="sub">tratados</span></div>
+      <div class="glass flat stat"><span class="rot">Total <i data-icon="trending-up" data-size="14"></i></span><b class="num" id="err-total">–</b><span class="sub">registros</span></div>
+    </div>
+    <div class="sec-h"><b>Relatórios</b></div>
+    <div class="filtros">
+      <label class="search"><input type="search" id="err-search-input" placeholder="Buscar mensagem, módulo, versão ou pilha" aria-label="Buscar erros"></label>
+      <div class="linha tres">
+        <select class="filter-select" id="err-filter-status" aria-label="Status do erro">
+          <option value="abertos" selected>Abertos</option>
+          <option value="resolvidos">Resolvidos</option>
+          <option value="todos">Todos</option>
+        </select>
+        <select class="filter-select" id="err-filter-app" aria-label="App">
+          <option value="">Todos os apps</option>
+          <option value="BARGESTAO">BarGestão</option>
+          <option value="CAMBIO">Câmbio</option>
+          <option value="CRIPTO">Cripto</option>
+          <option value="LIVROCAIXA">Livro-Caixa</option>
+          <option value="TAXOMETRO">Taxômetro</option>
+          <option value="INVEST">Investimentos</option>
+        </select>
+        <select class="filter-select" id="err-filter-modulo" aria-label="Módulo">
+          <option value="">Todos os módulos</option>
+          <option value="storage_opfs">Armazenamento / OPFS</option>
+          <option value="bluetooth_escpos">Bluetooth / ESC/POS</option>
+          <option value="crypto">Criptografia</option>
+          <option value="order">Pedidos e comandas</option>
+          <option value="dom">Interface</option>
+        </select>
       </div>
     </div>
-  </div>
+    <div class="lista-cards" id="error-list-container"></div>
+  </section>
 
-  <!-- ==========================================
-       PAINEL PRINCIPAL (SPA DE GOVERNANÇA)
-       ========================================== -->
-  <div id="app-container" class="app-container" style="display:none;">
-
-    <!-- SIDEBAR -->
-    <aside id="sidebar" class="sidebar">
-      <div class="brand-header">
-        <div class="brand-info">
-          <div class="brand-logo">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          </div>
-          <div class="brand-title">
-            <span>Systekna</span>
-            <span class="brand-subtitle">Governança Core</span>
-          </div>
-        </div>
-        <div class="sidebar-header-actions" style="display:flex;align-items:center;gap:0.25rem;">
-          <button id="sidebar-toggle-btn" type="button" class="sidebar-toggle-btn" title="Diminuir ou expandir menu (Desktop)">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><path d="M9 3v18"/><path d="m16 15-3-3 3-3"/></svg>
-          </button>
-          <button id="sidebar-close-btn" type="button" class="sidebar-toggle-btn sidebar-close-btn" title="Fechar menu">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-        </div>
-      </div>
-
-      <ul class="nav-menu">
-        <li id="nav-item-usuarios" class="nav-item active">
-          <button id="nav-btn-usuarios" type="button" title="Aprovação & Licenças">
-            <div class="nav-item-content">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-              <span class="nav-item-text">Aprovação & Licenças</span>
-            </div>
-            <span id="badge-count-usuarios" class="nav-badge">0</span>
-          </button>
-        </li>
-
-        <li id="nav-item-erros" class="nav-item">
-          <button id="nav-btn-erros" type="button" title="Erros do Sistema">
-            <div class="nav-item-content">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-              <span class="nav-item-text">Erros do Sistema</span>
-            </div>
-            <span id="badge-count-erros" class="nav-badge">0</span>
-          </button>
-        </li>
-
-        <li id="nav-item-feedbacks" class="nav-item">
-          <button id="nav-btn-feedbacks" type="button" title="Feedbacks dos Usuários">
-            <div class="nav-item-content">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              <span class="nav-item-text">Feedbacks dos Usuários</span>
-            </div>
-            <span id="badge-count-feedbacks" class="nav-badge">0</span>
-          </button>
-        </li>
-
-        <li id="nav-item-noticias" class="nav-item">
-          <button id="nav-btn-noticias" type="button" title="Notícias aos Devs">
-            <div class="nav-item-content">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>
-              <span class="nav-item-text">Notícias aos Devs</span>
-            </div>
-            <span id="badge-count-noticias" class="nav-badge">0</span>
-          </button>
-        </li>
-      </ul>
-
-      <!-- Perfil Logado no Rodapé da Sidebar -->
-      <div class="sidebar-footer">
-        <div class="user-details">
-          <span id="user-role-display" style="font-size:0.75rem;font-weight:700;color:var(--color-primary);text-transform:uppercase;">CEO</span>
-          <span id="user-email-display" class="user-name" style="font-size:0.8rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">ceo@systekna.com</span>
-        </div>
-        <button id="logout-btn" type="button" class="btn btn-secondary btn-sm" title="Encerrar sessão" style="padding:0.35rem 0.65rem;">
-          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-        </button>
-      </div>
-    </aside>
-
-    <!-- TOPBAR (LIMPA, RESPONSIVA, SEM LIVE-ISLAND) -->
-    <header class="topbar">
-      <div class="topbar-left">
-        <button id="menu-toggle-btn" type="button" class="menu-toggle-btn" aria-label="Abrir ou fechar menu" title="Diminuir ou abrir menu">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-        </button>
-        <div class="topbar-title">
-          <span class="topbar-title-main">Governança da Systekna</span>
-          <span class="topbar-title-sub">Painel Soberano de Gestão & Telemetria</span>
-        </div>
-      </div>
-
-      <!-- Ações da Topbar -->
-      <div class="topbar-right">
-        <button id="pwa-install-btn" type="button" class="btn btn-secondary btn-sm" style="display:none;" title="Instalar aplicativo PWA">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon" style="margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <span>Instalar App</span>
-        </button>
-        <span class="badge badge-info" style="font-size:0.75rem;">Firebase: systekna-feedback</span>
-        <a href="https://github.com/CelsoAlmeidaLF/governanca-systekna" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon" style="margin-right:4px;"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-          <span>GitHub Repo</span>
-        </a>
-      </div>
-    </header>
-
-    <!-- CONTEÚDO PRINCIPAL -->
-    <main class="main-content">
-
-      <!-- ====================================================
-           ABA 1: APROVAÇÃO DE USUÁRIOS & GESTÃO DE PERMISSÕES
-           ==================================================== -->
-      <section id="section-usuarios" class="content-section active">
-        <div style="margin-bottom:1.5rem;">
-          <h2 style="font-size:1.6rem;font-weight:700;color:#ffffff;letter-spacing:-0.02em;">Aprovação de Estabelecimentos & Licenciamento</h2>
-          <p style="font-size:0.9rem;color:var(--text-muted);">Controle soberano de cadastros (CNPJ opcional), autorização de Mesas vs Balcão e Kill-Switch remoto.</p>
-        </div>
-
-        <!-- Grid de Métricas -->
-        <div class="metrics-grid">
-          <div class="glass-card stat-card">
-            <div class="stat-header">
-              <span>SOLICITAÇÕES PENDENTES</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            </div>
-            <div id="user-pendentes-count" class="stat-value">0</div>
-            <div class="stat-subtext">Aguardando homologação de governança</div>
-          </div>
-
-          <div class="glass-card stat-card">
-            <div class="stat-header">
-              <span>COMÉRCIOS HOMOLOGADOS</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg>
-            </div>
-            <div id="user-aprovados-count" class="stat-value">0</div>
-            <div class="stat-subtext">Operando em conformidade</div>
-          </div>
-
-          <div class="glass-card stat-card">
-            <div class="stat-header">
-              <span>SALÃO & MESAS LIBERADAS</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M18 2v6a3 3 0 0 1-3 3 3 3 0 0 1-3-3V2"/><path d="M15 2v10v10"/><path d="M7 2v20"/></svg>
-            </div>
-            <div id="user-com-mesas-count" class="stat-value">0</div>
-            <div class="stat-subtext">Módulo de comandas autorizado</div>
-          </div>
-
-          <div class="glass-card stat-card">
-            <div class="stat-header">
-              <span>MODO BALCÃO PURO</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            </div>
-            <div id="user-sem-mesas-count" class="stat-value">0</div>
-            <div class="stat-subtext">Lojas de Salgados / Adegas (sem mesas)</div>
-          </div>
-        </div>
-
-        <!-- Sub-Navegação de Abas -->
-        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1.5rem;border-bottom:var(--glass-border-subtle);padding-bottom:0.75rem;">
-          <button id="subtab-btn-solicitacoes" type="button" class="btn btn-secondary active">
-            Fila de Solicitações de Novos Gestores
-          </button>
-          <button id="subtab-btn-tenants" type="button" class="btn btn-secondary">
-            Tenants & Licenças Ativas (Governança Avançada)
-          </button>
-        </div>
-
-        <!-- Painel 1: Solicitações -->
-        <div id="panel-solicitacoes">
-          <div class="toolbar">
-            <div class="search-input-group">
-              <span class="search-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              </span>
-              <input type="text" id="user-search-input" placeholder="Buscar por usuário, comércio, CNPJ ou tipo...">
-            </div>
-
-            <div style="display:flex;align-items:center;gap:0.75rem;">
-              <select id="user-filter-status" class="filter-select">
-                <option value="pendente" selected>Apenas Pendentes</option>
-                <option value="aprovado">Apenas Aprovados</option>
-                <option value="reprovado">Apenas Reprovados</option>
-                <option value="todos">Todos os Status</option>
-              </select>
-            </div>
-          </div>
-
-          <div id="solicitacoes-list-container">
-            <!-- Inserido dinamicamente via UserApprovalView -->
-          </div>
-        </div>
-
-        <!-- Painel 2: Tenants Ativos -->
-        <div id="panel-tenants" style="display:none;">
-          <div id="tenants-list-container">
-            <!-- Inserido dinamicamente via UserApprovalView -->
-          </div>
-        </div>
-      </section>
-
-      <!-- ====================================================
-           ABA 2: GESTÃO DE ERROS DO SISTEMA (TELEMETRIA)
-           ==================================================== -->
-      <section id="section-erros" class="content-section">
-        <div style="margin-bottom:1.5rem;">
-          <h2 style="font-size:1.6rem;font-weight:700;color:#ffffff;letter-spacing:-0.02em;">Central de Erros & Telemetria em Tempo Real</h2>
-          <p style="font-size:0.9rem;color:var(--text-muted);">Observabilidade, agrupamento inteligente de falhas sanitizadas e abertura direta de issues no GitHub.</p>
-        </div>
-
-        <!-- Grid de Métricas de Erro -->
-        <div class="metrics-grid">
-          <div class="glass-card stat-card">
-            <div class="stat-header">
-              <span>ERROS ABERTOS</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            </div>
-            <div id="err-abertos" class="stat-value" style="color:#ff5277;">0</div>
-            <div class="stat-subtext">Ocorrências aguardando correção</div>
-          </div>
-
-          <div class="glass-card stat-card">
-            <div class="stat-header">
-              <span>ÚLTIMAS 24 HORAS</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
-            </div>
-            <div id="err-24h" class="stat-value">0</div>
-            <div class="stat-subtext">Incidentes em runtime recente</div>
-          </div>
-
-          <div class="glass-card stat-card">
-            <div class="stat-header">
-              <span>RESOLVIDOS</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-            <div id="err-resolvidos" class="stat-value" style="color:var(--color-success);">0</div>
-            <div class="stat-subtext">Falhas homologadas e tratadas</div>
-          </div>
-
-          <div class="glass-card stat-card">
-            <div class="stat-header">
-              <span>TOTAL DE REGISTROS</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-            </div>
-            <div id="err-total" class="stat-value">0</div>
-            <div class="stat-subtext">Volume global de telemetria</div>
-          </div>
-        </div>
-
-        <!-- Toolbar de Erros -->
-        <div class="toolbar">
-          <div class="search-input-group">
-            <span class="search-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            </span>
-            <input type="text" id="err-search-input" placeholder="Buscar por mensagem, módulo, versão ou stack...">
-          </div>
-
-          <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
-            <select id="err-filter-status" class="filter-select">
-              <option value="abertos" selected>Erros Abertos</option>
-              <option value="resolvidos">Erros Resolvidos</option>
-              <option value="todos">Todos</option>
-            </select>
-
-            <select id="err-filter-app" class="filter-select">
-              <option value="">Todos os Apps</option>
-              <option value="BARGESTAO">BarGestão Aero</option>
-              <option value="CAMBIO">Câmbio Sim</option>
-              <option value="CRIPTO">Cripto Sim</option>
-              <option value="LIVROCAIXA">Livro-Caixa</option>
-              <option value="TAXOMETRO">Taxômetro</option>
-              <option value="INVEST">Investimentos</option>
-            </select>
-
-            <select id="err-filter-modulo" class="filter-select">
-              <option value="">Todos os Módulos</option>
-              <option value="storage_opfs">Storage / OPFS</option>
-              <option value="bluetooth_escpos">Bluetooth / ESC/POS</option>
-              <option value="crypto">Criptografia / WebCrypto</option>
-              <option value="order">Pedidos & Comandas</option>
-              <option value="dom">Interface & DOM</option>
-            </select>
-          </div>
-        </div>
-
-        <div id="error-list-container">
-          <!-- Inserido dinamicamente via ErrorManagementView -->
-        </div>
-      </section>
-
-      <!-- ====================================================
-           ABA 3: FEEDBACKS DOS USUÁRIOS
-           ==================================================== -->
-      <section id="section-feedbacks" class="content-section">
-        <div style="margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
-          <div>
-            <h2 style="font-size:1.6rem;font-weight:700;color:#ffffff;letter-spacing:-0.02em;">Feedbacks & Avaliações dos Usuários</h2>
-            <p style="font-size:0.9rem;color:var(--text-muted);">Sugestões, notas de satisfação (1 a 5 estrelas) e relatos de experiência de campo.</p>
-          </div>
-
-          <button id="fb-export-csv-btn" class="btn btn-secondary">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon" style="margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Exportar Relatório em CSV
-          </button>
-        </div>
-
-        <!-- Grid de Métricas de Feedback -->
-        <div class="metrics-grid">
-          <div class="glass-card stat-card">
-            <div class="stat-header">
-              <span>MÉDIA DE SATISFAÇÃO</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-            </div>
-            <div class="stat-value">
-              <span id="fb-media">0.0</span>
-              <span style="font-size:1.1rem;color:#ffd700;">/ 5.0</span>
-            </div>
-            <div class="stat-subtext">Avaliação ponderada dos usuários</div>
-          </div>
-
-          <div class="glass-card stat-card">
-            <div class="stat-header">
-              <span>NOVOS NÃO LIDOS</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-            </div>
-            <div id="fb-novos" class="stat-value" style="color:var(--color-primary);">0</div>
-            <div class="stat-subtext">Aguardando análise da equipe</div>
-          </div>
-
-          <div class="glass-card stat-card">
-            <div class="stat-header">
-              <span>TOTAL DE FEEDBACKS</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            </div>
-            <div id="fb-total" class="stat-value">0</div>
-            <div class="stat-subtext">Coletados em todo o ecossistema</div>
-          </div>
-
-          <div class="glass-card stat-card">
-            <div class="stat-header">
-              <span>DISTRIBUIÇÃO DE NOTAS</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-            </div>
-            <div id="fb-distribuicao" style="display:flex;flex-direction:column;gap:0.25rem;margin-top:0.4rem;">
-              <!-- Barras de notas preenchidas via FeedbackView -->
-            </div>
-          </div>
-        </div>
-
-        <!-- Toolbar de Feedbacks -->
-        <div class="toolbar">
-          <div class="search-input-group">
-            <span class="search-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            </span>
-            <input type="text" id="fb-search-input" placeholder="Buscar em mensagens, e-mails ou estabelecimentos...">
-          </div>
-
-          <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
-            <select id="fb-filter-status" class="filter-select">
-              <option value="todos">Todos os Status</option>
-              <option value="novos">Apenas Novos</option>
-              <option value="lidos">Apenas Lidos</option>
-            </select>
-
-            <select id="fb-filter-tipo" class="filter-select">
-              <option value="">Todos os Tipos</option>
-              <option value="sugestao">Sugestão</option>
-              <option value="elogio">Elogio</option>
-              <option value="problema">Problema</option>
-              <option value="duvida">Dúvida</option>
-            </select>
-
-            <select id="fb-filter-app" class="filter-select">
-              <option value="">Todos os Apps</option>
-              <option value="BARGESTAO">BarGestão Aero</option>
-              <option value="CAMBIO">Câmbio Sim</option>
-              <option value="CRIPTO">Cripto Sim</option>
-              <option value="LIVROCAIXA">Livro-Caixa</option>
-              <option value="TAXOMETRO">Taxômetro</option>
-              <option value="INVEST">Investimentos</option>
-              <option value="IDENTIDADE">Identidade Systekna</option>
-            </select>
-          </div>
-        </div>
-
-        <div id="feedback-list-container">
-          <!-- Inserido dinamicamente via FeedbackView -->
-        </div>
-      </section>
-
-      <!-- ====================================================
-           ABA 4: NOTÍCIAS AOS DESENVOLVEDORES
-           ==================================================== -->
-      <section id="section-noticias" class="content-section">
-        <div style="margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
-          <div>
-            <h2 style="font-size:1.6rem;font-weight:700;color:#ffffff;letter-spacing:-0.02em;">Canal de Notícias & Diretrizes aos Desenvolvedores</h2>
-            <p style="font-size:0.9rem;color:var(--text-muted);">Comunicados de arquitetura, releases de código, patches de segurança e orientações de governança.</p>
-          </div>
-
-          <button id="nova-noticia-btn" class="btn btn-primary">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon" style="margin-right:4px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Publicar Comunicado aos Devs
-          </button>
-        </div>
-
-        <!-- Toolbar de Notícias -->
-        <div class="toolbar">
-          <div class="search-input-group">
-            <span class="search-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            </span>
-            <input type="text" id="news-search-input" placeholder="Buscar comunicados por título, tags ou conteúdo...">
-          </div>
-
-          <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
-            <select id="news-filter-categoria" class="filter-select">
-              <option value="todas">Todas as Categorias</option>
-              <option value="arquitetura">Arquitetura & ADR</option>
-              <option value="release">Releases / Versões</option>
-              <option value="seguranca">Segurança & Hardening</option>
-              <option value="cloud">Cloud & Firebase</option>
-              <option value="governanca">Governança</option>
-            </select>
-
-            <select id="news-filter-prioridade" class="filter-select">
-              <option value="todas">Todas as Prioridades</option>
-              <option value="info">Informativo</option>
-              <option value="warning">Aviso / Atenção</option>
-              <option value="critical">Urgente / Crítico</option>
-            </select>
-          </div>
-        </div>
-
-        <div id="dev-news-container">
-          <!-- Inserido dinamicamente via DevNewsView -->
-        </div>
-      </section>
-
-    </main>
-
-    <!-- BARRA INFERIOR DE NAVEGAÇÃO: DESIGN DE APP MOBILE NATIVO -->
-    <nav id="mobile-tab-bar" class="mobile-tab-bar" aria-label="Navegação do App">
-      <button id="mobile-tab-usuarios" type="button" class="mobile-tab-item active" data-tab="usuarios">
-        <div class="mobile-tab-icon-wrapper">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          <span id="mobile-badge-usuarios" class="mobile-tab-badge">0</span>
-        </div>
-        <span class="mobile-tab-label">Licenças</span>
-      </button>
-
-      <button id="mobile-tab-erros" type="button" class="mobile-tab-item" data-tab="erros">
-        <div class="mobile-tab-icon-wrapper">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          <span id="mobile-badge-erros" class="mobile-tab-badge">0</span>
-        </div>
-        <span class="mobile-tab-label">Erros</span>
-      </button>
-
-      <button id="mobile-tab-feedbacks" type="button" class="mobile-tab-item" data-tab="feedbacks">
-        <div class="mobile-tab-icon-wrapper">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          <span id="mobile-badge-feedbacks" class="mobile-tab-badge">0</span>
-        </div>
-        <span class="mobile-tab-label">Feedbacks</span>
-      </button>
-
-      <button id="mobile-tab-noticias" type="button" class="mobile-tab-item" data-tab="noticias">
-        <div class="mobile-tab-icon-wrapper">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>
-          <span id="mobile-badge-noticias" class="mobile-tab-badge">0</span>
-        </div>
-        <span class="mobile-tab-label">Dev News</span>
-      </button>
-    </nav>
-  </div>
-
-  <!-- ==========================================
-       MODAL: PUBLICAR NOTÍCIA AOS DESENVOLVEDORES
-       ========================================== -->
-  <div id="noticia-modal-backdrop" class="modal-backdrop">
-    <div class="modal-window">
-      <div class="bottom-sheet-handle"></div>
-      <div class="modal-header">
-        <h3 style="font-size:1.25rem;font-weight:700;color:#ffffff;">Publicar Comunicado Técnico aos Desenvolvedores</h3>
-        <button id="noticia-modal-close" class="modal-close-btn">&times;</button>
-      </div>
-
-      <form id="noticia-form" style="display:flex;flex-direction:column;gap:1.1rem;">
-        <div class="form-group">
-          <label class="form-label" for="noticia-titulo">Título do Comunicado</label>
-          <input type="text" id="noticia-titulo" class="form-input" placeholder="Ex: Diretriz de Isolamento Zero-Knowledge e Criptografia AES-GCM" required>
-        </div>
-
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-          <div class="form-group">
-            <label class="form-label" for="noticia-categoria">Categoria Técnica</label>
-            <select id="noticia-categoria" class="form-input">
-              <option value="arquitetura" selected>Arquitetura & ADR</option>
-              <option value="release">Release / Versão</option>
-              <option value="seguranca">Segurança & Hardening</option>
-              <option value="cloud">Infraestrutura & Firebase</option>
-              <option value="governanca">Diretrizes de Governança</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="noticia-prioridade">Nível de Prioridade</label>
-            <select id="noticia-prioridade" class="form-input">
-              <option value="info" selected>Informativo (Info)</option>
-              <option value="warning">Aviso Técnico (Warning)</option>
-              <option value="critical">Urgente / Crítico (Critical)</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="noticia-resumo">Resumo Executivo (1 a 2 linhas)</label>
-          <input type="text" id="noticia-resumo" class="form-input" placeholder="Ex: Novo middleware sanitizador impede vazamento de dados em erros.">
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="noticia-conteudo">Conteúdo Técnico Completo (Suporta formatação e blocos)</label>
-          <textarea id="noticia-conteudo" class="form-input" rows="7" placeholder="Descreva os detalhes da especificação, exemplos de código, links de PRs e orientações de engenharia..." required></textarea>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="noticia-tags">Tags Técnicas (separadas por vírgula)</label>
-          <input type="text" id="noticia-tags" class="form-input" placeholder="hexagonal, pwa, security, firebase">
-        </div>
-
-        <div style="display:flex;align-items:center;justify-content:flex-end;gap:0.75rem;margin-top:0.75rem;">
-          <button type="button" onclick="document.getElementById('noticia-modal-backdrop').classList.remove('open')" class="btn btn-secondary">
-            Cancelar
-          </button>
-          <button type="submit" class="btn btn-primary">
-            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon" style="margin-right:4px;"><polyline points="20 6 9 17 4 12"/></svg> Publicar Comunicado
-          </button>
-        </div>
-      </form>
+  <!-- ═════ FEEDBACKS dos usuários do BarGestão ═════ -->
+  <section class="secao" id="section-feedbacks" hidden>
+    <div class="sec-h"><b>Feedbacks &amp; avaliações</b><button class="btn btn-ghost" type="button" id="fb-export-csv-btn" title="Exportar a lista em CSV"><i data-icon="download" data-size="16"></i> Exportar CSV</button></div>
+    <div class="stat-grid">
+      <div class="glass flat stat"><span class="rot">Média <i data-icon="star" data-size="14"></i></span><b class="num"><span id="fb-media">–</span> <small style="font-size:13px;color:var(--soft)">/ 5</small></b><span class="sub">das avaliações</span></div>
+      <div class="glass flat stat ac"><span class="rot">Não lidos <i data-icon="message-square" data-size="14"></i></span><b class="num" id="fb-novos">–</b><span class="sub">aguardando leitura</span></div>
+      <div class="glass flat stat"><span class="rot">Total <i data-icon="file-text" data-size="14"></i></span><b class="num" id="fb-total">–</b><span class="sub">em todos os apps</span></div>
+      <div class="glass flat stat"><span class="rot">Distribuição <i data-icon="trending-up" data-size="14"></i></span><div class="dist-mini" id="fb-distribuicao"></div></div>
     </div>
-  </div>
+    <div class="sec-h"><b>Mensagens</b></div>
+    <div class="filtros">
+      <label class="search"><input type="search" id="fb-search-input" placeholder="Buscar na mensagem, e-mail ou estabelecimento" aria-label="Buscar feedbacks"></label>
+      <div class="linha tres">
+        <select class="filter-select" id="fb-filter-status" aria-label="Status">
+          <option value="todos">Todos</option>
+          <option value="novos">Não lidos</option>
+          <option value="lidos">Lidos</option>
+        </select>
+        <select class="filter-select" id="fb-filter-tipo" aria-label="Tipo">
+          <option value="">Todos os tipos</option>
+          <option value="sugestao">Sugestão</option>
+          <option value="elogio">Elogio</option>
+          <option value="problema">Problema</option>
+          <option value="duvida">Dúvida</option>
+        </select>
+        <select class="filter-select" id="fb-filter-app" aria-label="App">
+          <option value="">Todos os apps</option>
+          <option value="BARGESTAO">BarGestão</option>
+          <option value="CAMBIO">Câmbio</option>
+          <option value="CRIPTO">Cripto</option>
+          <option value="LIVROCAIXA">Livro-Caixa</option>
+          <option value="TAXOMETRO">Taxômetro</option>
+          <option value="INVEST">Investimentos</option>
+          <option value="IDENTIDADE">Identidade</option>
+        </select>
+      </div>
+    </div>
+    <div class="lista-cards" id="feedback-list-container"></div>
+  </section>
 
-  <!-- Script Principal Modular -->
-  <script type="module" src="js/main.js?v=1.0.6"></script>
+  <!-- ═════ COMUNICADOS aos desenvolvedores ═════ -->
+  <section class="secao" id="section-noticias" hidden>
+    <div class="sec-h"><b>Comunicados aos devs</b><button class="btn btn-primary btn-sm" type="button" id="nova-noticia-btn"><i data-icon="plus" data-size="16"></i> Publicar</button></div>
+    <div class="filtros">
+      <label class="search"><input type="search" id="news-search-input" placeholder="Buscar por título, tag ou conteúdo" aria-label="Buscar comunicados"></label>
+      <div class="linha dois">
+        <select class="filter-select" id="news-filter-categoria" aria-label="Categoria">
+          <option value="todas">Todas as categorias</option>
+          <option value="arquitetura">Arquitetura &amp; ADR</option>
+          <option value="release">Versões</option>
+          <option value="seguranca">Segurança</option>
+          <option value="cloud">Nuvem &amp; Firebase</option>
+          <option value="governanca">Governança</option>
+        </select>
+        <select class="filter-select" id="news-filter-prioridade" aria-label="Prioridade">
+          <option value="todas">Todas as prioridades</option>
+          <option value="info">Informativo</option>
+          <option value="warning">Atenção</option>
+          <option value="critical">Crítico</option>
+        </select>
+      </div>
+    </div>
+    <div class="lista-cards" id="dev-news-container"></div>
+  </section>
+
+  <p class="note">Protegido por reCAPTCHA. Valem a <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Privacidade</a> e os <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer">Termos</a> do Google.</p>
+</main>
+
+<!-- Celular: barra inferior -->
+<nav class="dock glass" id="dock" aria-label="Seções">
+  <button type="button" data-tab="usuarios" aria-current="true"><i data-icon="user" data-size="22"></i>Licenças<span class="cont" id="mobile-badge-usuarios"></span></button>
+  <button type="button" data-tab="erros" aria-current="false"><i data-icon="alert" data-size="22"></i>Erros<span class="cont" id="mobile-badge-erros"></span></button>
+  <button type="button" data-tab="feedbacks" aria-current="false"><i data-icon="message-square" data-size="22"></i>Feedbacks<span class="cont" id="mobile-badge-feedbacks"></span></button>
+  <button type="button" data-tab="noticias" aria-current="false"><i data-icon="file-text" data-size="22"></i>Avisos</button>
+</nav>
+</div>
+
+<div class="toast glass" id="toast" role="status" aria-live="polite"><i></i><span id="toastT"></span></div>
+
+<!-- Conta do painel: e-mail e senha guardados no cofre do aparelho -->
+<dialog class="glass dlg" id="dlgConta" aria-labelledby="dlgContaT">
+  <form method="dialog" id="formConta" novalidate>
+    <h2 id="dlgContaT">Entrar de novo</h2>
+    <p class="lede">Faz o login com seu e-mail e senha e guarda os dois cifrados no cofre deste aparelho. Nas próximas vezes, o PIN ou a biometria bastam.</p>
+    <label class="f">E-mail<input type="email" id="contaEmail" autocomplete="username" required></label>
+    <label class="f">Senha<input type="password" id="contaSenha" autocomplete="current-password" required></label>
+    <p class="msg" id="msgConta" role="status" aria-live="polite"></p>
+    <div class="dlg-acoes">
+      <button class="btn btn-secondary" type="button" data-fechar>Cancelar</button>
+      <button class="btn btn-primary" type="submit" id="btnSalvarConta">Entrar e guardar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog class="glass dlg" id="dlgSenha" aria-labelledby="dlgSenhaT">
+  <form method="dialog" id="formSenha" novalidate>
+    <h2 id="dlgSenhaT">Trocar a senha da conta</h2>
+    <p class="lede">Muda a senha de login do painel no Firebase. A senha guardada neste aparelho é atualizada junto.</p>
+    <label class="f" id="senhaAtualCampo">Senha atual<input type="password" id="senhaAtual" autocomplete="current-password"></label>
+    <label class="f">Nova senha<input type="password" id="senhaNova" autocomplete="new-password" minlength="10" required></label>
+    <label class="f">Repita a nova senha<input type="password" id="senhaNova2" autocomplete="new-password" minlength="10" required></label>
+    <p class="msg" id="msgSenha" role="status" aria-live="polite"></p>
+    <div class="dlg-acoes">
+      <button class="btn btn-secondary" type="button" data-fechar>Cancelar</button>
+      <button class="btn btn-primary" type="submit" id="btnSalvarSenha">Trocar senha</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Confirmação e motivo (no lugar de confirm/prompt do navegador) -->
+<dialog class="glass dlg" id="dlgConfirmar" aria-labelledby="dlgConfirmarT">
+  <form method="dialog" id="formConfirmar" novalidate>
+    <h2 id="dlgConfirmarT">Confirmar</h2>
+    <p class="lede" id="dlgConfirmarTexto"></p>
+    <label class="f" id="dlgConfirmarCampo" hidden><span id="dlgConfirmarRotulo">Motivo</span><input type="text" id="dlgConfirmarValor" maxlength="300"></label>
+    <div class="dlg-acoes" id="dlgConfirmarAcoes">
+      <button class="btn btn-secondary" type="button" data-fechar>Cancelar</button>
+      <button class="btn btn-primary" type="submit" id="dlgConfirmarOk">Confirmar</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Publicar comunicado aos desenvolvedores -->
+<dialog class="glass dlg largo" id="noticia-modal" aria-labelledby="noticiaT">
+  <form method="dialog" id="noticia-form" novalidate>
+    <h2 id="noticiaT">Publicar comunicado</h2>
+    <label class="f">Título<input type="text" id="noticia-titulo" maxlength="160" required></label>
+    <div class="pair">
+      <label class="f">Categoria
+        <select class="select" id="noticia-categoria">
+          <option value="arquitetura" selected>Arquitetura &amp; ADR</option>
+          <option value="release">Versão</option>
+          <option value="seguranca">Segurança</option>
+          <option value="cloud">Nuvem &amp; Firebase</option>
+          <option value="governanca">Governança</option>
+        </select>
+      </label>
+      <label class="f">Prioridade
+        <select class="select" id="noticia-prioridade">
+          <option value="info" selected>Informativo</option>
+          <option value="warning">Atenção</option>
+          <option value="critical">Crítico</option>
+        </select>
+      </label>
+    </div>
+    <label class="f">Resumo (1 a 2 linhas)<input type="text" id="noticia-resumo" maxlength="300"></label>
+    <label class="f">Conteúdo<textarea id="noticia-conteudo" rows="7" required></textarea></label>
+    <label class="f">Tags (separadas por vírgula)<input type="text" id="noticia-tags" placeholder="pwa, segurança, firebase"></label>
+    <p class="msg" id="msgNoticia" role="status" aria-live="polite"></p>
+    <div class="dlg-acoes">
+      <button class="btn btn-secondary" type="button" id="noticia-modal-cancelar-btn" data-fechar>Cancelar</button>
+      <button class="btn btn-primary" type="submit" id="btnPublicarNoticia">Publicar</button>
+    </div>
+  </form>
+</dialog>
+
+<noscript><p class="lede" style="text-align:center;padding:40px 16px">Ative o JavaScript para usar o painel.</p></noscript>
+<script src="stk-pkg-financ-icons.js"></script>
+<script src="stk-pkg-bip39-pt.js"></script>
+<script src="stk-pkg-secure-vault.js"></script>
+<script src="stk-pkg-secure-ui.js"></script>
+<script src="js/main.js" type="module"></script>
 </body>
 </html>

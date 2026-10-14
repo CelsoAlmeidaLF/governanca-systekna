@@ -1,4 +1,6 @@
 import { Icons } from '../icons/Icons.js';
+import { escapeHtml } from '../utils/escapeHtml.js';
+import { confirmar } from '../utils/dialogo.js';
 
 /**
  * UI View: DevNewsView
@@ -16,10 +18,11 @@ export class DevNewsView {
     this._searchInput = document.getElementById('news-search-input');
     this._novaNoticiaBtn = document.getElementById('nova-noticia-btn');
 
-    // Modal de publicação
-    this._modalBackdrop = document.getElementById('noticia-modal-backdrop');
+    // Janela de publicação (<dialog> Aero; o Cancelar é ligado em utils/dialogo.js)
+    this._modal = document.getElementById('noticia-modal');
     this._modalForm = document.getElementById('noticia-form');
-    this._modalCloseBtn = document.getElementById('noticia-modal-close');
+    this._msg = document.getElementById('msgNoticia');
+    this._btnPublicar = document.getElementById('btnPublicarNoticia');
     this._tituloInput = document.getElementById('noticia-titulo');
     this._categoriaSelect = document.getElementById('noticia-categoria');
     this._prioridadeSelect = document.getElementById('noticia-prioridade');
@@ -37,18 +40,6 @@ export class DevNewsView {
       });
     }
 
-    if (this._modalCloseBtn) {
-      this._modalCloseBtn.addEventListener('click', () => {
-        this._fecharModal();
-      });
-    }
-
-    if (this._modalBackdrop) {
-      this._modalBackdrop.addEventListener('click', (e) => {
-        if (e.target === this._modalBackdrop) this._fecharModal();
-      });
-    }
-
     if (this._modalForm) {
       this._modalForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -62,6 +53,12 @@ export class DevNewsView {
           autor: 'CEO & Engenheiro Chefe'
         };
 
+        if (!payload.titulo || !payload.conteudo) {
+          this._mensagem('Preencha o título e o conteúdo.', 'err');
+          return;
+        }
+        this._btnPublicar.disabled = true;
+        this._mensagem('Publicando…');
         try {
           if (this._onPublicarNoticia) {
             await this._onPublicarNoticia(payload);
@@ -69,18 +66,27 @@ export class DevNewsView {
           this._fecharModal();
           this._modalForm.reset();
         } catch (err) {
-          alert(`Erro ao publicar notícia: ${err.message}`);
+          this._mensagem(`Não foi possível publicar: ${err.message}`, 'err');
+        } finally {
+          this._btnPublicar.disabled = false;
         }
       });
     }
   }
 
+  _mensagem(texto, tipo = '') {
+    if (!this._msg) return;
+    this._msg.textContent = texto;
+    this._msg.className = 'msg' + (tipo ? ' ' + tipo : '');
+  }
+
   _abrirModal() {
-    if (this._modalBackdrop) this._modalBackdrop.classList.add('open');
+    this._mensagem('');
+    if (this._modal) { this._modal.showModal(); this._tituloInput?.focus(); }
   }
 
   _fecharModal() {
-    if (this._modalBackdrop) this._modalBackdrop.classList.remove('open');
+    if (this._modal?.open) this._modal.close();
   }
 
   onFilterChange(callback) {
@@ -122,21 +128,21 @@ export class DevNewsView {
       return `
         <article class="glass-card" style="margin-bottom:1.5rem;display:flex;flex-direction:column;gap:1rem;">
           <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
-            <div style="display:flex;align-items:center;gap:0.65rem;">
+            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:0.65rem;">
               ${prioridadeBadge}
-              <span class="badge badge-neutral">${n.getRotuloCategoria().replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '').trim()}</span>
+              <span class="badge badge-neutral">${escapeHtml(n.getRotuloCategoria().replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '').trim())}</span>
             </div>
             <div style="font-size:0.8rem;color:var(--text-dim);">
               ${new Date(n.criadoEm).toLocaleDateString('pt-BR')} • Publicado por ${this._sanitizarHtml(n.autor)}
             </div>
           </div>
 
-          <h3 style="color:#ffffff;font-size:1.3rem;font-weight:700;line-height:1.3;">
+          <h3 style="color:var(--ink);font-size:1.3rem;font-weight:700;line-height:1.3;">
             ${this._sanitizarHtml(n.titulo)}
           </h3>
 
           ${n.resumo ? `
-            <div style="font-size:0.95rem;color:var(--text-main);font-weight:500;padding:0.75rem 1rem;background:rgba(255,255,255,0.03);border-left:3px solid var(--color-primary);border-radius:var(--border-radius-sm);">
+            <div style="font-size:0.95rem;color:var(--text-main);font-weight:500;padding:0.75rem 1rem;background:var(--track);border-left:3px solid var(--color-primary);border-radius:var(--border-radius-sm);">
               ${this._sanitizarHtml(n.resumo)}
             </div>
           ` : ''}
@@ -148,7 +154,7 @@ export class DevNewsView {
               ${tagsHtml}
             </div>
 
-            <button class="btn btn-danger btn-sm excluir-noticia-btn" data-id="${n.id}" title="Excluir comunicado">
+            <button class="btn btn-danger btn-sm excluir-noticia-btn" data-id="${escapeHtml(n.id)}" title="Excluir comunicado">
               ${Icons.svg('trash', { size: 14 })} Excluir
             </button>
           </div>
@@ -157,9 +163,9 @@ export class DevNewsView {
     }).join('');
 
     this._container.querySelectorAll('.excluir-noticia-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', async () => {
         const id = btn.getAttribute('data-id');
-        if (confirm('Deseja excluir este comunicado para os desenvolvedores?')) {
+        if (await confirmar('O comunicado sai do canal dos desenvolvedores.', { titulo: 'Excluir comunicado?', ok: 'Excluir', perigo: true })) {
           if (this._onExcluirNoticia) this._onExcluirNoticia(id);
         }
       });
@@ -167,8 +173,6 @@ export class DevNewsView {
   }
 
   _sanitizarHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str || '';
-    return div.innerHTML;
+    return escapeHtml(str);
   }
 }
