@@ -1,3 +1,5 @@
+import { PLANOS } from '../../../stk-pkg-governanca/stk-pkg-governanca-contrato.js';
+
 /**
  * Entidade de Domínio: TenantPermission
  * Modela os controles de governança ativa, tiers, módulos, cotas e kill-switch remoto de um tenant.
@@ -71,22 +73,10 @@ export class TenantPermission {
   }
 
   atualizarPlano(plano) {
-    if (['starter', 'pro', 'enterprise'].includes(plano)) {
+    if (PLANOS[plano]) {
       this.licenca.plano = plano;
-      if (plano === 'starter') {
-        this.permissoesModulos.limiteProdutos = 50;
-        this.permissoesModulos.limiteUsuarios = 2;
-        this.permissoesModulos.permiteExportacaoXlsx = false;
-      } else if (plano === 'pro') {
-        this.permissoesModulos.limiteProdutos = 1000;
-        this.permissoesModulos.limiteUsuarios = 10;
-        this.permissoesModulos.permiteExportacaoXlsx = true;
-      } else if (plano === 'enterprise') {
-        this.permissoesModulos.limiteProdutos = 100000;
-        this.permissoesModulos.limiteUsuarios = 100;
-        this.permissoesModulos.permiteEscPosTermica = true;
-        this.permissoesModulos.permiteExportacaoXlsx = true;
-      }
+      // Tabela única do contrato stk-pkg-governanca (a mesma da aprovação)
+      this.permissoesModulos = { ...this.permissoesModulos, ...PLANOS[plano] };
     }
   }
 

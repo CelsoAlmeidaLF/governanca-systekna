@@ -1,5 +1,6 @@
 import { UserRegistration } from '../domain/entities/UserRegistration.js';
 import { TenantPermission } from '../domain/entities/TenantPermission.js';
+import { modulosDoPlano } from '../../stk-pkg-governanca/stk-pkg-governanca-contrato.js';
 
 /**
  * Application Service: UserApprovalService
@@ -90,14 +91,7 @@ export class UserApprovalService {
         expiraEm: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
         bloqueioRemoto: false
       },
-      permissoesModulos: {
-        permiteMesas: Boolean(permiteMesas),
-        permiteBiometria: true,
-        permiteExportacaoXlsx: plano !== 'starter',
-        permiteEscPosTermica: plano === 'enterprise',
-        limiteProdutos: plano === 'starter' ? 50 : 1000,
-        limiteUsuarios: plano === 'starter' ? 2 : 10
-      }
+      permissoesModulos: modulosDoPlano(plano, { permiteMesas })
     });
 
     await this._port.salvarTenant(tenant.toJSON());
