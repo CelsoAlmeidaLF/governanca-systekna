@@ -546,6 +546,41 @@
       </section>
 
     </main>
+
+    <!-- BARRA INFERIOR DE NAVEGAÇÃO: DESIGN DE APP MOBILE NATIVO -->
+    <nav id="mobile-tab-bar" class="mobile-tab-bar" aria-label="Navegação do App">
+      <button id="mobile-tab-usuarios" type="button" class="mobile-tab-item active" data-tab="usuarios">
+        <div class="mobile-tab-icon-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          <span id="mobile-badge-usuarios" class="mobile-tab-badge">0</span>
+        </div>
+        <span class="mobile-tab-label">Licenças</span>
+      </button>
+
+      <button id="mobile-tab-erros" type="button" class="mobile-tab-item" data-tab="erros">
+        <div class="mobile-tab-icon-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span id="mobile-badge-erros" class="mobile-tab-badge">0</span>
+        </div>
+        <span class="mobile-tab-label">Erros</span>
+      </button>
+
+      <button id="mobile-tab-feedbacks" type="button" class="mobile-tab-item" data-tab="feedbacks">
+        <div class="mobile-tab-icon-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <span id="mobile-badge-feedbacks" class="mobile-tab-badge">0</span>
+        </div>
+        <span class="mobile-tab-label">Feedbacks</span>
+      </button>
+
+      <button id="mobile-tab-noticias" type="button" class="mobile-tab-item" data-tab="noticias">
+        <div class="mobile-tab-icon-wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>
+          <span id="mobile-badge-noticias" class="mobile-tab-badge">0</span>
+        </div>
+        <span class="mobile-tab-label">Dev News</span>
+      </button>
+    </nav>
   </div>
 
   <!-- ==========================================
@@ -553,6 +588,7 @@
        ========================================== -->
   <div id="noticia-modal-backdrop" class="modal-backdrop">
     <div class="modal-window">
+      <div class="bottom-sheet-handle"></div>
       <div class="modal-header">
         <h3 style="font-size:1.25rem;font-weight:700;color:#ffffff;">Publicar Comunicado Técnico aos Desenvolvedores</h3>
         <button id="noticia-modal-close" class="modal-close-btn">&times;</button>
