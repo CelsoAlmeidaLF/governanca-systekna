@@ -1,5 +1,6 @@
 import { Icons } from '../icons/Icons.js';
 import { escapeHtml } from '../utils/escapeHtml.js';
+import { formatarUid } from '../utils/formatarUid.js';
 import { confirmar, pedirTexto } from '../utils/dialogo.js';
 
 /**
@@ -115,6 +116,7 @@ export class FeedbackView {
           <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;padding-top:0.75rem;border-top:var(--glass-border-subtle);font-size:0.82rem;color:var(--text-muted);">
             <div>
               <strong>Usuário:</strong> ${this._sanitizarHtml(fb.usuario)}
+              ${fb.uid ? ` | <strong>UID:</strong> <span style="font-family:var(--font-mono);">${escapeHtml(formatarUid(fb.uid))}</span>` : ''}
               ${fb.estabelecimento ? ` | <strong>Comércio:</strong> ${this._sanitizarHtml(fb.estabelecimento)}` : ''}
               ${fb.email ? ` | <span>${this._sanitizarHtml(fb.email)}</span>` : ''}
             </div>

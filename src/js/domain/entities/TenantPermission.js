@@ -42,14 +42,14 @@ export class TenantPermission {
     };
 
     this.politicaVersao = {
-      versaoMinima: politicaVersao.versaoMinima || '9.3.0',
-      bloquearLegado: politicaVersao.bloquearLegado !== undefined ? Boolean(politicaVersao.bloquearLegado) : true
+      versaoMinima: politicaVersao.versaoMinima || null, // sem política até a governança definir
+      bloquearLegado: Boolean(politicaVersao.bloquearLegado)
     };
 
     this.metricasCompliance = {
       ultimoAcessoEm: metricasCompliance.ultimoAcessoEm || new Date().toISOString(),
       ultimoBackupEm: metricasCompliance.ultimoBackupEm || null,
-      versaoCliente: metricasCompliance.versaoCliente || '9.3.0'
+      versaoCliente: metricasCompliance.versaoCliente || null
     };
   }
 

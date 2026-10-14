@@ -76,3 +76,14 @@ test('TenantPermission: ativação e suspensão por Kill-Switch Remoto (Eixo 1)'
   assert.equal(tenant.licenca.bloqueioRemoto, false);
   assert.equal(tenant.licenca.status, 'ativo');
 });
+
+test('TenantPermission: sem política de versão definida, nada é bloqueado nem inventado', () => {
+  const tenant = new TenantPermission({ id: 'a'.repeat(32), nomeComercio: 'Bar Teste' });
+  assert.equal(tenant.politicaVersao.versaoMinima, null);
+  assert.equal(tenant.politicaVersao.bloquearLegado, false);
+  assert.equal(tenant.metricasCompliance.versaoCliente, null);
+
+  const comPolitica = new TenantPermission({ politicaVersao: { versaoMinima: '2.5.0', bloquearLegado: true } });
+  assert.equal(comPolitica.politicaVersao.versaoMinima, '2.5.0');
+  assert.equal(comPolitica.politicaVersao.bloquearLegado, true);
+});

@@ -83,6 +83,7 @@ export class FirestoreGovernanceAdapter {
       nota: d.nota || d.avaliacao || 5,
       mensagem: d.mensagem || d.texto || '',
       usuario: d.usuario || 'anonimo',
+      uid: d.uid || '',
       email: d.email || '',
       estabelecimento: d.estabelecimento || '',
       status: d.status || (d.lida ? 'lido' : 'novo'),
@@ -113,13 +114,14 @@ export class FirestoreGovernanceAdapter {
     return docs.map(({ id, data: d }) => ({
       id,
       app: d.app || 'BARGESTAO',
-      versao: d.versaoApp || d.versao || '9.3.0',
+      versao: d.versaoApp || d.versao || '—',
       modulo: d.modulo || 'geral',
       mensagem: d.mensagem || '',
       stackTrace: d.stackTrace || d.stack || '',
       origem: d.origem || '',
       tipo: d.tipo || 'erro',
       usuario: d.usuario || 'anonimo',
+      uid: d.uid || '',
       ambiente: d.ambiente || {},
       resolvido: Boolean(d.resolvido),
       criadoEm: FirestoreGovernanceAdapter._iso(d.dataOcorrencia) || d.criadoEm || new Date().toISOString()
