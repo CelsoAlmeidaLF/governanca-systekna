@@ -1,16 +1,16 @@
-import { FirebaseAuthAdapter } from './infrastructure/adapters/FirebaseAuthAdapter.js?v=1.0.5';
-import { FirestoreGovernanceAdapter } from './infrastructure/adapters/FirestoreGovernanceAdapter.js?v=1.0.5';
-import { AuthService } from './application/AuthService.js?v=1.0.5';
-import { FeedbackService } from './application/FeedbackService.js?v=1.0.5';
-import { ErrorManagementService } from './application/ErrorManagementService.js?v=1.0.5';
-import { UserApprovalService } from './application/UserApprovalService.js?v=1.0.5';
-import { DevNewsService } from './application/DevNewsService.js?v=1.0.5';
-import { AuthView } from './ui/views/AuthView.js?v=1.0.5';
-import { FeedbackView } from './ui/views/FeedbackView.js?v=1.0.5';
-import { ErrorManagementView } from './ui/views/ErrorManagementView.js?v=1.0.5';
-import { UserApprovalView } from './ui/views/UserApprovalView.js?v=1.0.5';
-import { DevNewsView } from './ui/views/DevNewsView.js?v=1.0.5';
-import { GovernanceAppController } from './ui/controllers/GovernanceAppController.js?v=1.0.5';
+import { FirebaseAuthAdapter } from './infrastructure/adapters/FirebaseAuthAdapter.js?v=1.0.6';
+import { FirestoreGovernanceAdapter } from './infrastructure/adapters/FirestoreGovernanceAdapter.js?v=1.0.6';
+import { AuthService } from './application/AuthService.js?v=1.0.6';
+import { FeedbackService } from './application/FeedbackService.js?v=1.0.6';
+import { ErrorManagementService } from './application/ErrorManagementService.js?v=1.0.6';
+import { UserApprovalService } from './application/UserApprovalService.js?v=1.0.6';
+import { DevNewsService } from './application/DevNewsService.js?v=1.0.6';
+import { AuthView } from './ui/views/AuthView.js?v=1.0.6';
+import { FeedbackView } from './ui/views/FeedbackView.js?v=1.0.6';
+import { ErrorManagementView } from './ui/views/ErrorManagementView.js?v=1.0.6';
+import { UserApprovalView } from './ui/views/UserApprovalView.js?v=1.0.6';
+import { DevNewsView } from './ui/views/DevNewsView.js?v=1.0.6';
+import { GovernanceAppController } from './ui/controllers/GovernanceAppController.js?v=1.0.6';
 
 // Registro do Service Worker (PWA)
 if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
