@@ -1,4 +1,6 @@
 import { Icons } from '../icons/Icons.js';
+import { escapeHtml } from '../utils/escapeHtml.js';
+import { confirmar, pedirTexto } from '../utils/dialogo.js';
 
 /**
  * UI View: FeedbackView
@@ -58,9 +60,9 @@ export class FeedbackView {
     if (this._distribuicaoDisplay && metricas.distribuicao) {
       this._distribuicaoDisplay.innerHTML = metricas.distribuicao
         .map((qtd, idx) => `
-          <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.75rem;color:var(--text-muted);">
-            <span style="display:inline-flex;align-items:center;gap:2px;">${idx + 1} ${Icons.svg('star', { size: 11, color: '#ffd700' })}</span>
-            <div style="flex:1;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
+          <div style="display:flex;align-items:center;flex-wrap:wrap;gap:0.4rem;font-size:0.75rem;color:var(--text-muted);">
+            <span style="display:inline-flex;align-items:center;gap:2px;">${idx + 1} ${Icons.svg('star', { size: 11, color: '#E8A317' })}</span>
+            <div style="flex:1;height:5px;background:var(--track);border-radius:3px;overflow:hidden;">
               <div style="height:100%;width:${metricas.total ? (qtd / metricas.total * 100) : 0}%;background:var(--color-primary);"></div>
             </div>
             <span>${qtd}</span>
@@ -88,7 +90,7 @@ export class FeedbackView {
       let estrelasHtml = '';
       for (let i = 1; i <= 5; i++) {
         estrelasHtml += i <= fb.nota
-          ? Icons.svg('star', { size: 14, color: '#ffd700' })
+          ? Icons.svg('star', { size: 14, color: '#E8A317' })
           : Icons.svg('starOutline', { size: 14, color: '#64748b' });
       }
 
@@ -97,12 +99,12 @@ export class FeedbackView {
       return `
         <div class="glass-card ${!fb.lida ? 'pulse-border' : ''}" style="margin-bottom:1rem;display:flex;flex-direction:column;gap:0.85rem;">
           <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
-            <div style="display:flex;align-items:center;gap:0.65rem;">
-              <span class="badge ${tipoClass}">${fb.tipo.toUpperCase()}</span>
-              <span class="badge badge-neutral">${feedbackService.getNomeApp(fb.app)}</span>
+            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:0.65rem;">
+              <span class="badge ${tipoClass}">${escapeHtml(String(fb.tipo).toUpperCase())}</span>
+              <span class="badge badge-neutral">${escapeHtml(feedbackService.getNomeApp(fb.app))}</span>
               <span style="display:inline-flex;align-items:center;gap:2px;">${estrelasHtml}</span>
             </div>
-            <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;color:var(--text-dim);">
+            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:0.5rem;font-size:0.8rem;color:var(--text-dim);">
               <span>${new Date(fb.criadoEm).toLocaleString('pt-BR')}</span>
               ${!fb.lida ? '<span class="badge badge-warn">NOVO</span>' : '<span class="badge badge-neutral">LIDO</span>'}
             </div>
@@ -117,18 +119,18 @@ export class FeedbackView {
               ${fb.email ? ` | <span>${this._sanitizarHtml(fb.email)}</span>` : ''}
             </div>
 
-            <div style="display:flex;align-items:center;gap:0.5rem;">
+            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:0.5rem;">
               ${linkResposta ? `
-                <a href="${linkResposta}" class="btn btn-secondary btn-sm" title="Responder por e-mail">
+                <a href="${escapeHtml(linkResposta)}" class="btn btn-secondary btn-sm" title="Responder por e-mail">
                   ${Icons.svg('mail', { size: 14 })} Responder
                 </a>
               ` : ''}
 
-              <button class="btn btn-secondary btn-sm toggle-lido-btn" data-id="${fb.id}" data-lido="${fb.lida}">
+              <button class="btn btn-secondary btn-sm toggle-lido-btn" data-id="${escapeHtml(fb.id)}" data-lido="${fb.lida ? 'true' : 'false'}">
                 ${fb.lida ? 'Marcar Não Lido' : `${Icons.svg('check', { size: 14 })} Marcar Lido`}
               </button>
 
-              <button class="btn btn-danger btn-sm excluir-fb-btn" data-id="${fb.id}" title="Excluir">
+              <button class="btn btn-danger btn-sm excluir-fb-btn" data-id="${escapeHtml(fb.id)}" title="Excluir">
                 ${Icons.svg('trash', { size: 14 })}
               </button>
             </div>
@@ -147,9 +149,9 @@ export class FeedbackView {
     });
 
     this._container.querySelectorAll('.excluir-fb-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
+      btn.addEventListener('click', async () => {
         const id = btn.getAttribute('data-id');
-        if (confirm('Deseja excluir permanentemente este feedback?')) {
+        if (await confirmar('O feedback é apagado do Firestore e não volta.', { titulo: 'Excluir feedback?', ok: 'Excluir', perigo: true })) {
           if (this._onExcluir) this._onExcluir(id);
         }
       });
@@ -157,8 +159,6 @@ export class FeedbackView {
   }
 
   _sanitizarHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str || '';
-    return div.innerHTML;
+    return escapeHtml(str);
   }
 }

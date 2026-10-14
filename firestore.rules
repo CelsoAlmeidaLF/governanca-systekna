@@ -1,0 +1,186 @@
+rules_version = '2';
+// Regras ÚNICAS do projeto systekna-feedback: avaliações/sugestões/erros dos apps (painel de feedback)
+// e as coleções do Governança Systekna. Fonte: PACOTES/stk-pkg-doacao/firestore.rules.
+// O governanca-systekna guarda uma CÓPIA idêntica (conferida por teste). Publicar só desta pasta:
+//   npx -y firebase-tools deploy --only firestore --project systekna-feedback
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Conta dona do painel de feedback (feedback-painel): lê, marca como lida e apaga
+    function dono() {
+      return request.auth != null && request.auth.uid == 'q6KSrUMgdqUsWd5YSTcHCbioKCu2';
+    }
+
+    function appValido(app) {
+      return app in ['CRIPTO', 'LIVROCAIXA', 'CAMBIO', 'DESPESAS', 'LAUNCHER', 'TAXOMETRO', 'INVEST'];
+    }
+
+    // Avaliações: públicas (só app + nota), ninguém edita; só o dono apaga (spam)
+    match /avaliacoes/{id} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly(['app', 'nota', 'criadoEm'])
+        && appValido(request.resource.data.app)
+        && request.resource.data.nota is int
+        && request.resource.data.nota >= 1 && request.resource.data.nota <= 5
+        && request.resource.data.criadoEm == request.time;
+      allow delete: if dono();
+      allow update: if false;
+    }
+
+    // Sugestões: qualquer um cria, só o dono lê
+    match /sugestoes/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['app', 'tipo', 'texto', 'email', 'criadoEm'])
+        && appValido(request.resource.data.app)
+        && request.resource.data.tipo in ['sugestao', 'problema', 'elogio']
+        && request.resource.data.texto is string
+        && request.resource.data.texto.size() >= 3 && request.resource.data.texto.size() <= 1000
+        && (!('email' in request.resource.data) || (
+              request.resource.data.email is string
+              && request.resource.data.email.size() <= 120
+              && request.resource.data.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')))
+        && request.resource.data.criadoEm == request.time;
+      allow read, delete: if dono();
+      // só o campo lida (true/false) muda; o resto da mensagem fica intacto
+      allow update: if dono()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lida'])
+        && request.resource.data.lida is bool;
+    }
+
+    // Relatórios de erro (stk-pkg-erros.js): qualquer app cria, só com campos técnicos e limpos; só o dono lê
+    function textoAte(v, max) { return v is string && v.size() <= max; }
+    match /erros/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['app', 'versao', 'tipo', 'mensagem', 'origem', 'pilha', 'navegador', 'assinatura', 'criadoEm'])
+        && request.resource.data.keys().hasAll(['app', 'versao', 'tipo', 'mensagem', 'assinatura', 'criadoEm'])
+        && appValido(request.resource.data.app)
+        && textoAte(request.resource.data.versao, 20)
+        && request.resource.data.tipo in ['erro', 'promessa', 'console']
+        && textoAte(request.resource.data.mensagem, 300) && request.resource.data.mensagem.size() >= 1
+        && (!('origem' in request.resource.data) || textoAte(request.resource.data.origem, 120))
+        && (!('pilha' in request.resource.data) || textoAte(request.resource.data.pilha, 600))
+        && (!('navegador' in request.resource.data) || textoAte(request.resource.data.navegador, 60))
+        && request.resource.data.assinatura is string && request.resource.data.assinatura.matches('^[0-9a-f]{8}$')
+        && request.resource.data.criadoEm == request.time;
+      allow read, delete: if dono();
+      // só o campo resolvido (true/false) muda
+      allow update: if dono()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['resolvido'])
+        && request.resource.data.resolvido is bool;
+    }
+
+    // ═════ Governança Systekna (GESTAO-BAR/governanca-systekna) ═════
+    // Apps do BarGestão não autenticam: só CRIAM documentos com esquema validado e LEEM um documento
+    // pelo id (UUID gerado no aparelho). Listar, editar e apagar é só do gestor().
+    // Quem governa: a conta dona (mesmo UID do painel de feedback) ou uma conta com a custom claim admin
+    // (scripts/set-admin-claim.mjs do governanca-systekna).
+    function gestor() {
+      return dono() || (request.auth != null && request.auth.token.admin == true);
+    }
+
+    function texto(v, max) {
+      return v is string && v.size() <= max;
+    }
+
+    function identificador(v) {
+      return v is string && v.matches('^[A-Za-z0-9._-]{1,40}$');
+    }
+
+    // Apps do ecossistema que podem enviar telemetria/feedback
+    function appGovernanca(v) {
+      return v in ['BARGESTAO', 'CAMBIO', 'CRIPTO', 'LIVROCAIXA', 'TAXOMETRO', 'INVEST', 'IDENTIDADE'];
+    }
+
+    function versaoValida(v) {
+      return v is string && v.matches('^[0-9]{1,3}[.][0-9]{1,3}[.][0-9]{1,3}$');
+    }
+
+    // Datas enviadas pelo cliente precisam estar perto da hora do servidor (sem forjar ordem/métricas)
+    function agora(ts) {
+      return ts is timestamp
+        && ts > request.time - duration.value(10, 'm')
+        && ts < request.time + duration.value(5, 'm');
+    }
+
+    function idSeguro(id) {
+      // UUID v4 gerado por crypto.randomUUID() no app cliente
+      return id.matches('^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$');
+    }
+
+    match /feedbacks_usuarios/{id} {
+      allow read, update, delete: if gestor();
+      allow create: if gestor() || (
+        idSeguro(id)
+        && request.resource.data.keys().hasOnly(['app', 'usuario', 'estabelecimento', 'tipo', 'avaliacao', 'mensagem', 'status', 'enviadoEm'])
+        && request.resource.data.keys().hasAll(['app', 'tipo', 'avaliacao', 'mensagem', 'status', 'enviadoEm'])
+        && appGovernanca(request.resource.data.app)
+        && (!('usuario' in request.resource.data) || identificador(request.resource.data.usuario))
+        && (!('estabelecimento' in request.resource.data) || texto(request.resource.data.estabelecimento, 120))
+        && request.resource.data.tipo in ['sugestao', 'elogio', 'problema', 'duvida']
+        && request.resource.data.avaliacao is int
+        && request.resource.data.avaliacao >= 1 && request.resource.data.avaliacao <= 5
+        && texto(request.resource.data.mensagem, 2000) && request.resource.data.mensagem.size() > 0
+        && request.resource.data.status == 'novo'
+        && agora(request.resource.data.enviadoEm)
+      );
+    }
+
+    match /telemetria_erros/{id} {
+      allow read, update, delete: if gestor();
+      allow create: if gestor() || (
+        idSeguro(id)
+        && request.resource.data.keys().hasOnly(['app', 'usuario', 'versaoApp', 'mensagem', 'modulo', 'stackTrace', 'ambiente', 'dataOcorrencia', 'resolvido'])
+        && request.resource.data.keys().hasAll(['app', 'versaoApp', 'mensagem', 'modulo', 'dataOcorrencia', 'resolvido'])
+        && appGovernanca(request.resource.data.app)
+        && versaoValida(request.resource.data.versaoApp)
+        && identificador(request.resource.data.modulo)
+        && (!('usuario' in request.resource.data) || identificador(request.resource.data.usuario))
+        && texto(request.resource.data.mensagem, 2000)
+        && (!('stackTrace' in request.resource.data) || texto(request.resource.data.stackTrace, 2000))
+        && (!('ambiente' in request.resource.data) || (
+          request.resource.data.ambiente is map
+          && request.resource.data.ambiente.keys().hasOnly(['userAgent', 'online', 'opfsSuportado', 'viewport'])
+          && (!('online' in request.resource.data.ambiente) || request.resource.data.ambiente.online is bool)
+          && (!('opfsSuportado' in request.resource.data.ambiente) || request.resource.data.ambiente.opfsSuportado is bool)
+          && (!('userAgent' in request.resource.data.ambiente) || texto(request.resource.data.ambiente.userAgent, 300))
+          && (!('viewport' in request.resource.data.ambiente) || texto(request.resource.data.ambiente.viewport, 20))
+        ))
+        && agora(request.resource.data.dataOcorrencia)
+        && request.resource.data.resolvido == false
+      );
+    }
+
+    match /solicitacoes_governanca/{id} {
+      allow get: if gestor() || idSeguro(id);
+      allow list, update, delete: if gestor();
+      allow create: if gestor() || (
+        idSeguro(id)
+        && request.resource.data.keys().hasOnly(['usuario', 'cnpj', 'nomeEstabelecimento', 'tipoComercio', 'status', 'permiteMesas', 'solicitadoEm', 'aprovadoEm', 'aprovadoPor', 'motivoDecisao'])
+        && request.resource.data.keys().hasAll(['usuario', 'status', 'permiteMesas', 'solicitadoEm'])
+        && request.resource.data.usuario is string
+        && request.resource.data.usuario.matches('^[A-Za-z0-9._-]{3,30}$')
+        && (!('cnpj' in request.resource.data) || request.resource.data.cnpj == null
+            || (request.resource.data.cnpj is string && request.resource.data.cnpj.matches('^[0-9]{14}$')))
+        && (!('nomeEstabelecimento' in request.resource.data) || texto(request.resource.data.nomeEstabelecimento, 120))
+        && (!('tipoComercio' in request.resource.data) || request.resource.data.tipoComercio in ['bar', 'loja_salgados', 'lanchonete', 'adega', 'outro'])
+        // O app só pode abrir solicitação pendente; quem decide é a governança.
+        && request.resource.data.status == 'pendente'
+        && request.resource.data.permiteMesas is bool
+        && agora(request.resource.data.solicitadoEm)
+        && (!('aprovadoEm' in request.resource.data) || request.resource.data.aprovadoEm == null)
+        && (!('aprovadoPor' in request.resource.data) || request.resource.data.aprovadoPor == null)
+        && (!('motivoDecisao' in request.resource.data) || request.resource.data.motivoDecisao == '')
+      );
+    }
+
+    match /tenants_governanca/{id} {
+      // O app lê a própria licença (kill-switch, módulos) pelo id da solicitação de origem.
+      allow get: if gestor() || idSeguro(id);
+      allow list, create, update, delete: if gestor();
+    }
+
+    match /noticias_devs/{id} {
+      allow read, write: if gestor();
+    }
+
+    // ⚠️ Se usar o MESMO projeto do Despesas da Casa, mantenha aqui as regras que já existem para ele.
+  }
+}

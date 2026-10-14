@@ -1,21 +1,28 @@
 {
   "name": "governanca-systekna",
-  "version": "1.0.0",
-  "description": "Painel de Governança Systekna — CEO & Engenheiro Chefe (Aprovação de Usuários, Permissões, Feedbacks, Telemetria e Notícias Devs)",
+  "version": "1.2.0",
+  "description": "Painel de Governança Systekna (Aero 3.0, cofre PIN/biometria): aprovação de estabelecimentos, licenças, erros, feedbacks e comunicados aos devs",
   "type": "module",
   "scripts": {
     "test": "node --test tests/*.test.mjs",
-    "start": "python3 -m http.server 8080 --directory src"
+    "start": "cd src && python3 -m http.server 8780",
+    "test:rules": "firebase emulators:exec --only firestore --project demo-systekna \"node tests/rules/firestore-rules.check.mjs\"",
+    "deploy:hosting": "npx -y firebase-tools deploy --only hosting --project systekna-feedback"
   },
   "keywords": [
     "systekna",
     "governanca",
     "firebase",
     "hexagonal-architecture",
-    "glassmorphism",
     "telemetry",
-    "pos"
+    "pos",
+    "aero"
   ],
   "author": "Systekna Engineering Core",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "firebase-tools": "13.29.1",
+    "@firebase/rules-unit-testing": "3.0.4",
+    "firebase": "10.14.1"
+  }
 }

@@ -7,10 +7,6 @@ export class IAuthPort {
     throw new Error('Método signInWithEmail não implementado');
   }
 
-  async createUserWithEmail(email, password, displayName) {
-    throw new Error('Método createUserWithEmail não implementado');
-  }
-
   async signOut() {
     throw new Error('Método signOut não implementado');
   }
@@ -21,6 +17,10 @@ export class IAuthPort {
 
   onAuthStateChanged(callback) {
     throw new Error('Método onAuthStateChanged não implementado');
+  }
+
+  async changePassword(currentPassword, newPassword) {
+    throw new Error('Método changePassword não implementado');
   }
 
   getCurrentUser() {
