@@ -17,6 +17,18 @@ export class AuthService {
     return user;
   }
 
+  async cadastrarUsuario(email, password, displayName) {
+    if (!email || !password) {
+      throw new Error('E-mail e senha são obrigatórios para cadastro.');
+    }
+    if (password.length < 6) {
+      throw new Error('A senha deve conter no mínimo 6 caracteres.');
+    }
+    const user = await this._authAdapter.createUserWithEmail(email, password, displayName);
+    this._currentUser = user;
+    return user;
+  }
+
   async logout() {
     await this._authAdapter.signOut();
     this._currentUser = null;

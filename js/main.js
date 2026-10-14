@@ -34,6 +34,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       authView.renderUserState(user);
       if (controller) await controller.carregarTodosDados();
     },
+    onRegister: async (email, password, displayName) => {
+      const user = await authService.cadastrarUsuario(email, password, displayName);
+      authView.renderUserState(user);
+      if (controller) await controller.carregarTodosDados();
+    },
     onLogout: async () => {
       await authService.logout();
       authView.renderUserState(null);
