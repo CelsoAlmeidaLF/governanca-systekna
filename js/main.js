@@ -1,16 +1,16 @@
-import { FirebaseAuthAdapter } from './infrastructure/adapters/FirebaseAuthAdapter.js';
-import { FirestoreGovernanceAdapter } from './infrastructure/adapters/FirestoreGovernanceAdapter.js';
-import { AuthService } from './application/AuthService.js';
-import { FeedbackService } from './application/FeedbackService.js';
-import { ErrorManagementService } from './application/ErrorManagementService.js';
-import { UserApprovalService } from './application/UserApprovalService.js';
-import { DevNewsService } from './application/DevNewsService.js';
-import { AuthView } from './ui/views/AuthView.js';
-import { FeedbackView } from './ui/views/FeedbackView.js';
-import { ErrorManagementView } from './ui/views/ErrorManagementView.js';
-import { UserApprovalView } from './ui/views/UserApprovalView.js';
-import { DevNewsView } from './ui/views/DevNewsView.js';
-import { GovernanceAppController } from './ui/controllers/GovernanceAppController.js';
+import { FirebaseAuthAdapter } from './infrastructure/adapters/FirebaseAuthAdapter.js?v=1.0.3';
+import { FirestoreGovernanceAdapter } from './infrastructure/adapters/FirestoreGovernanceAdapter.js?v=1.0.3';
+import { AuthService } from './application/AuthService.js?v=1.0.3';
+import { FeedbackService } from './application/FeedbackService.js?v=1.0.3';
+import { ErrorManagementService } from './application/ErrorManagementService.js?v=1.0.3';
+import { UserApprovalService } from './application/UserApprovalService.js?v=1.0.3';
+import { DevNewsService } from './application/DevNewsService.js?v=1.0.3';
+import { AuthView } from './ui/views/AuthView.js?v=1.0.3';
+import { FeedbackView } from './ui/views/FeedbackView.js?v=1.0.3';
+import { ErrorManagementView } from './ui/views/ErrorManagementView.js?v=1.0.3';
+import { UserApprovalView } from './ui/views/UserApprovalView.js?v=1.0.3';
+import { DevNewsView } from './ui/views/DevNewsView.js?v=1.0.3';
+import { GovernanceAppController } from './ui/controllers/GovernanceAppController.js?v=1.0.3';
 
 // Inicialização Principal da Aplicação
 document.addEventListener('DOMContentLoaded', async () => {
