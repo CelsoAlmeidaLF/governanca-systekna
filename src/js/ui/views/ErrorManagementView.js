@@ -1,6 +1,9 @@
+import { Icons } from '../icons/Icons.js';
+
 /**
  * UI View: ErrorManagementView
  * Controla a exibição de telemetria de falhas, agrupamento por assinatura e integração com GitHub Issues.
+ * REGRA ABSOLUTA: Proibido o uso de emojis como ícones visuais na interface.
  */
 export class ErrorManagementView {
   constructor({ onAlternarStatus, onExcluirGrupo }) {
@@ -48,7 +51,7 @@ export class ErrorManagementView {
     if (grupos.length === 0) {
       this._container.innerHTML = `
         <div class="glass-card" style="text-align:center;padding:3rem;color:var(--text-muted);">
-          <div style="font-size:2.5rem;margin-bottom:0.75rem;">🛡️</div>
+          <div style="margin-bottom:0.75rem;color:var(--color-success);">${Icons.svg('shield', { size: 42, color: 'var(--color-success)' })}</div>
           <p>Nenhuma ocorrência de erro correspondente aos filtros. Sistema operando em estabilidade!</p>
         </div>
       `;
@@ -85,8 +88,8 @@ export class ErrorManagementView {
 
           <!-- Stack Trace com acordeão -->
           <details style="cursor:pointer;">
-            <summary style="font-size:0.82rem;color:var(--color-primary);user-select:none;outline:none;">
-              🔍 Visualizar Stack Trace Sanitizado
+            <summary style="font-size:0.82rem;color:var(--color-primary);user-select:none;outline:none;display:inline-flex;align-items:center;gap:0.4rem;">
+              ${Icons.svg('search', { size: 14 })} Visualizar Stack Trace Sanitizado
             </summary>
             <div class="code-block" style="margin-top:0.6rem;">${this._sanitizarHtml(g.stackTrace || 'Sem stack trace registrado.')}</div>
           </details>
@@ -98,15 +101,15 @@ export class ErrorManagementView {
 
             <div style="display:flex;align-items:center;gap:0.5rem;">
               <a href="${linkGitHub}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" title="Criar issue no GitHub do repositório">
-                🐙 Abrir Issue no GitHub
+                ${Icons.svg('github', { size: 14 })} Abrir Issue no GitHub
               </a>
 
               <button class="btn btn-primary btn-sm alternar-resolvido-btn" data-index="${index}">
-                ${g.resolvido ? 'Reabrir Erro' : '✓ Marcar como Resolvido'}
+                ${g.resolvido ? 'Reabrir Erro' : `${Icons.svg('check', { size: 14 })} Marcar como Resolvido`}
               </button>
 
               <button class="btn btn-danger btn-sm excluir-grupo-btn" data-index="${index}" title="Excluir ocorrências">
-                🗑️
+                ${Icons.svg('trash', { size: 14 })}
               </button>
             </div>
           </div>

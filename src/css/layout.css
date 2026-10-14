@@ -1,5 +1,7 @@
 /**
  * Systekna Governança — Layout Base em CSS Grid e Flexbox
+ * Suporte Completo: Mobile (<640px), Tablet (641px-1024px), Monitores (1025px-1440px) e Telas Grandes / 4K (>1440px).
+ * Sidebar Retrátil (Diminuir/Expandir) e Drawer Lateral para Mobile/Tablet com PWA.
  */
 
 * {
@@ -20,26 +22,68 @@ body {
   position: relative;
 }
 
-/* Esqueleto Principal com CSS Grid */
+/* ====================================================
+   CONTAINER PRINCIPAL (CSS GRID MULTI-ESCALA)
+   ==================================================== */
 .app-container {
   display: grid;
   grid-template-columns: 280px 1fr;
-  grid-template-rows: 72px 1fr;
+  grid-template-rows: 68px 1fr;
   grid-template-areas:
     "sidebar topbar"
     "sidebar main";
   min-height: 100vh;
   position: relative;
   z-index: 1;
+  transition: grid-template-columns var(--transition-smooth);
 }
 
-/* Topbar Superior em Glassmorphism */
+/* Modo Recolhido (Desktop e Monitores): 76px */
+.app-container.sidebar-collapsed {
+  grid-template-columns: 76px 1fr;
+}
+
+.app-container.sidebar-collapsed .brand-title,
+.app-container.sidebar-collapsed .brand-subtitle,
+.app-container.sidebar-collapsed .nav-item-text,
+.app-container.sidebar-collapsed .nav-badge,
+.app-container.sidebar-collapsed .user-details,
+.app-container.sidebar-collapsed .sidebar-header-actions {
+  display: none !important;
+}
+
+.app-container.sidebar-collapsed .brand-header {
+  justify-content: center;
+  padding-bottom: 1rem;
+}
+
+.app-container.sidebar-collapsed .brand-logo {
+  margin: 0 auto;
+}
+
+.app-container.sidebar-collapsed .nav-item button {
+  justify-content: center;
+  padding: 0.75rem 0;
+}
+
+.app-container.sidebar-collapsed .nav-item-content {
+  gap: 0;
+}
+
+.app-container.sidebar-collapsed .sidebar-footer {
+  justify-content: center;
+  padding: 1rem 0;
+}
+
+/* ====================================================
+   TOPBAR SUPERIOR (GLASSMORPHYSM RETRO-AERO)
+   ==================================================== */
 .topbar {
   grid-area: topbar;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 2rem;
+  padding: 0 1.75rem;
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
@@ -47,47 +91,64 @@ body {
   position: sticky;
   top: 0;
   z-index: 40;
+  height: 68px;
+  gap: 1rem;
 }
 
-/* Ilha Viva Dinâmica (Live Island) no centro da Topbar */
-.live-island {
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.topbar-right {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.45rem 1.1rem;
-  background: rgba(10, 18, 34, 0.75);
+}
+
+.topbar-title {
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar-title-main {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.topbar-title-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Botão de Toggle do Menu na Topbar */
+.menu-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: rgba(14, 25, 48, 0.6);
   border: var(--glass-border);
-  border-radius: var(--border-radius-pill);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  font-size: 0.85rem;
+  border-radius: var(--border-radius-sm);
   color: var(--text-main);
-  transition: var(--transition-smooth);
+  cursor: pointer;
+  transition: var(--transition-fast);
 }
 
-.live-island:hover {
-  transform: translateY(-1px);
+.menu-toggle-btn:hover {
+  background: var(--glass-bg-hover);
   border-color: rgba(0, 210, 255, 0.4);
+  color: #ffffff;
+  transform: translateY(-1px);
 }
 
-.live-island .status-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--color-success);
-  box-shadow: 0 0 10px var(--color-success);
-}
-
-.live-island.warning .status-dot {
-  background: var(--color-warning);
-  box-shadow: 0 0 10px var(--color-warning);
-}
-
-.live-island.critical .status-dot {
-  background: var(--color-danger);
-  box-shadow: 0 0 10px var(--color-danger);
-}
-
-/* Sidebar Lateral em Glassmorphism */
+/* ====================================================
+   SIDEBAR LATERAL
+   ==================================================== */
 .sidebar {
   grid-area: sidebar;
   display: flex;
@@ -96,33 +157,43 @@ body {
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   border-right: var(--glass-border);
-  padding: 1.5rem 1.25rem;
+  padding: 1.25rem 1rem;
   position: sticky;
   top: 0;
   height: 100vh;
   z-index: 50;
   overflow-y: auto;
+  overflow-x: hidden;
+  transition: width var(--transition-smooth), transform var(--transition-smooth);
 }
 
 .brand-header {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
-  padding-bottom: 1.5rem;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-bottom: 1.25rem;
   border-bottom: var(--glass-border-subtle);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.brand-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  overflow: hidden;
 }
 
 .brand-logo {
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
   border-radius: 12px;
   background: linear-gradient(135deg, #00d2ff 0%, #3a86ff 60%, #7000ff 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 0 20px rgba(0, 210, 255, 0.45);
-  font-size: 1.4rem;
 }
 
 .brand-title {
@@ -132,6 +203,7 @@ body {
   color: #ffffff;
   display: flex;
   flex-direction: column;
+  white-space: nowrap;
 }
 
 .brand-subtitle {
@@ -140,6 +212,28 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-weight: 600;
+}
+
+.sidebar-toggle-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: var(--border-radius-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.sidebar-toggle-btn:hover {
+  background: var(--glass-bg-hover);
+  color: #ffffff;
+}
+
+.sidebar-close-btn {
+  display: none;
 }
 
 /* Menu de Navegação */
@@ -165,6 +259,7 @@ body {
   font-weight: 500;
   cursor: pointer;
   transition: var(--transition-fast);
+  white-space: nowrap;
 }
 
 .nav-item button:hover {
@@ -195,16 +290,56 @@ body {
   color: var(--text-main);
 }
 
-/* Conteúdo Principal */
+/* Rodapé da Sidebar */
+.sidebar-footer {
+  padding-top: 1.25rem;
+  border-top: var(--glass-border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Backdrop translúcido para Drawer Mobile/Tablet */
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(4, 8, 16, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 90;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast);
+}
+
+.sidebar-backdrop.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ====================================================
+   CONTEÚDO PRINCIPAL (MAIN CONTENT)
+   ==================================================== */
 .main-content {
   grid-area: main;
-  padding: 2rem;
-  max-width: 1500px;
+  padding: 2rem 2.25rem;
+  max-width: 1560px;
   width: 100%;
   margin: 0 auto;
 }
 
-/* Grid de Métricas no Topo de Cada Aba */
+/* Grid de Métricas Adaptativo */
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -222,54 +357,156 @@ body {
   display: block;
 }
 
-/* Responsividade */
-@media (max-width: 1024px) {
-  .app-container {
-    grid-template-columns: 80px 1fr;
+/* Wrapper de Tabelas com Scroll Suave */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: var(--border-radius-md);
+  margin-top: 1rem;
+}
+
+.table-responsive::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: rgba(10, 16, 30, 0.5);
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: rgba(0, 210, 255, 0.3);
+  border-radius: 3px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 210, 255, 0.6);
+}
+
+/* ====================================================
+   RESPONSIVIDADE MULTI-DISPOSITIVO
+   ==================================================== */
+
+/* TELAS GRANDES & 4K (> 1440px / 2160px) */
+@media (min-width: 1440px) {
+  .main-content {
+    max-width: 1800px;
+    padding: 2.5rem 3rem;
   }
-  .brand-title, .brand-subtitle, .nav-item-text, .nav-badge, .user-name {
-    display: none;
-  }
-  .sidebar {
-    padding: 1rem 0.5rem;
-    align-items: center;
-  }
-  .nav-item button {
-    justify-content: center;
-    padding: 0.75rem;
+  .metrics-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
   }
 }
 
-@media (max-width: 768px) {
+@media (min-width: 2160px) {
+  .main-content {
+    max-width: 2400px;
+    padding: 3rem 4rem;
+  }
+  .metrics-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+  }
+  .stat-value {
+    font-size: 2.5rem;
+  }
+}
+
+/* TABLET & MONITORES MENORES (<= 1024px) */
+@media (max-width: 1024px) {
   .app-container {
     grid-template-columns: 1fr;
-    grid-template-rows: 64px 1fr 64px;
+    grid-template-rows: 64px 1fr;
     grid-template-areas:
       "topbar"
-      "main"
-      "sidebar";
+      "main";
   }
+
   .sidebar {
     position: fixed;
+    top: 0;
+    left: 0;
     bottom: 0;
-    top: auto;
-    width: 100%;
-    height: 64px;
-    flex-direction: row;
-    border-right: none;
-    border-top: var(--glass-border);
-    padding: 0.5rem;
+    width: 290px;
+    max-width: 85vw;
+    height: 100vh;
+    z-index: 100;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
+    background: rgba(8, 14, 28, 0.94);
   }
-  .brand-header {
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-backdrop {
+    display: block;
+  }
+
+  .sidebar-close-btn {
+    display: inline-flex;
+  }
+
+  .sidebar-toggle-btn {
     display: none;
   }
-  .nav-menu {
-    flex-direction: row;
-    justify-content: space-around;
-    width: 100%;
+
+  .menu-toggle-btn {
+    display: inline-flex !important;
   }
+
   .main-content {
-    padding: 1rem;
-    padding-bottom: 80px;
+    padding: 1.5rem;
+  }
+
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+/* MOBILE (< 768px) */
+@media (max-width: 768px) {
+  .topbar {
+    padding: 0 1rem;
+    height: 60px;
+  }
+
+  .topbar-title-sub {
+    display: none;
+  }
+
+  .topbar-right .btn span,
+  .topbar-right .badge {
+    display: none;
+  }
+
+  .main-content {
+    padding: 1rem 0.85rem;
+  }
+
+  .metrics-grid {
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 0.75rem 0.65rem;
+    font-size: 0.82rem;
+  }
+
+  .auth-card {
+    padding: 1.5rem 1.25rem;
+    width: 95%;
+  }
+
+  .modal-dialog {
+    max-width: 95vw;
+    max-height: 90vh;
+    padding: 1.25rem;
   }
 }

@@ -7,18 +7,30 @@
   <meta name="description" content="Painel Soberano de Governança, Homologação de Usuários, Telemetria de Erros, Gestão de Feedbacks e Notícias aos Desenvolvedores da Systekna.">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   
+  <!-- PWA & Mobile Meta Tags -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#070c18">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Governança">
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+
   <!-- Fontes Google Fonts Modernas -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- Estilos Aero Glassmorphism 2.0 -->
-  <link rel="stylesheet" href="css/tokens.css">
-  <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="css/components.css">
-  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/tokens.css?v=1.0.5">
+  <link rel="stylesheet" href="css/layout.css?v=1.0.5">
+  <link rel="stylesheet" href="css/components.css?v=1.0.5">
+  <link rel="stylesheet" href="css/animations.css?v=1.0.5">
 </head>
 <body>
+
+  <!-- Backdrop Translúcido para Mobile/Tablet Drawer -->
+  <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
 
   <!-- ==========================================
        TELA DE AUTENTICAÇÃO (FIREBASE AUTH)
@@ -26,7 +38,9 @@
   <div id="auth-wrapper" class="auth-wrapper">
     <div class="auth-card">
       <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
-        <div class="brand-logo">🏛️</div>
+        <div class="brand-logo">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
         <div>
           <h1 style="font-size:1.4rem;font-weight:700;color:#ffffff;letter-spacing:-0.02em;">Governança Systekna</h1>
           <p style="font-size:0.75rem;color:var(--color-primary);text-transform:uppercase;letter-spacing:0.08em;font-weight:600;">CEO & Engenheiro Chefe</p>
@@ -36,10 +50,10 @@
       <!-- Abas de Alternância: Entrar vs Cadastrar -->
       <div style="display:flex;align-items:center;background:rgba(10, 16, 30, 0.6);border:var(--glass-border-subtle);border-radius:var(--border-radius-md);padding:0.25rem;gap:0.25rem;">
         <button type="button" id="tab-auth-login" class="btn btn-secondary btn-sm active" style="flex:1;border-radius:var(--border-radius-sm);background:rgba(0, 210, 255, 0.15);color:#ffffff;border:var(--glass-border-accent);">
-          🔐 Entrar
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon" style="margin-right:4px;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Entrar
         </button>
         <button type="button" id="tab-auth-register" class="btn btn-secondary btn-sm" style="flex:1;border-radius:var(--border-radius-sm);border:none;background:transparent;color:var(--text-muted);">
-          ✨ Cadastrar Novo Usuário
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon" style="margin-right:4px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Cadastrar Novo Usuário
         </button>
       </div>
 
@@ -58,12 +72,22 @@
 
         <div class="form-group">
           <label class="form-label" for="login-password">Senha de Segurança (mín. 6 caracteres)</label>
-          <input type="password" id="login-password" class="form-input" placeholder="••••••••••••" required autocomplete="current-password">
+          <div class="password-input-wrapper">
+            <input type="password" id="login-password" class="form-input" placeholder="••••••••••••" required autocomplete="current-password">
+            <button type="button" id="toggle-login-password-btn" class="password-toggle-btn" aria-label="Visualizar senha" title="Visualizar ou ocultar senha">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
         </div>
 
         <div id="form-group-confirm-password" class="form-group" style="display:none;">
           <label class="form-label" for="register-confirm-password">Confirmar Senha</label>
-          <input type="password" id="register-confirm-password" class="form-input" placeholder="••••••••••••" autocomplete="new-password">
+          <div class="password-input-wrapper">
+            <input type="password" id="register-confirm-password" class="form-input" placeholder="••••••••••••" autocomplete="new-password">
+            <button type="button" id="toggle-confirm-password-btn" class="password-toggle-btn" aria-label="Visualizar senha" title="Visualizar ou ocultar senha">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
         </div>
 
         <button type="submit" id="login-btn" class="btn btn-primary" style="margin-top:0.5rem;">
@@ -73,7 +97,7 @@
 
       <div style="display:flex;flex-direction:column;gap:0.75rem;padding-top:1rem;border-top:var(--glass-border-subtle);text-align:center;">
         <button type="button" id="demo-login-btn" class="btn btn-secondary btn-sm" style="width:100%;">
-          ⚡ Acesso Direto (CEO & Engenheiro Chefe)
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon" style="margin-right:4px;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Acesso Direto (CEO & Engenheiro Chefe)
         </button>
         <button type="button" id="reset-password-btn" style="background:transparent;border:none;color:var(--text-dim);font-size:0.8rem;cursor:pointer;text-decoration:underline;">
           Esqueceu sua senha? Solicitar redefinição
@@ -88,20 +112,32 @@
   <div id="app-container" class="app-container" style="display:none;">
 
     <!-- SIDEBAR -->
-    <aside class="sidebar">
+    <aside id="sidebar" class="sidebar">
       <div class="brand-header">
-        <div class="brand-logo">🏛️</div>
-        <div class="brand-title">
-          <span>Systekna</span>
-          <span class="brand-subtitle">Governança Core</span>
+        <div class="brand-info">
+          <div class="brand-logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div class="brand-title">
+            <span>Systekna</span>
+            <span class="brand-subtitle">Governança Core</span>
+          </div>
+        </div>
+        <div class="sidebar-header-actions" style="display:flex;align-items:center;gap:0.25rem;">
+          <button id="sidebar-toggle-btn" type="button" class="sidebar-toggle-btn" title="Diminuir ou expandir menu (Desktop)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><path d="M9 3v18"/><path d="m16 15-3-3 3-3"/></svg>
+          </button>
+          <button id="sidebar-close-btn" type="button" class="sidebar-toggle-btn sidebar-close-btn" title="Fechar menu">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
         </div>
       </div>
 
       <ul class="nav-menu">
         <li id="nav-item-usuarios" class="nav-item active">
-          <button id="nav-btn-usuarios" type="button">
+          <button id="nav-btn-usuarios" type="button" title="Aprovação & Licenças">
             <div class="nav-item-content">
-              <span>👥</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
               <span class="nav-item-text">Aprovação & Licenças</span>
             </div>
             <span id="badge-count-usuarios" class="nav-badge">0</span>
@@ -109,9 +145,9 @@
         </li>
 
         <li id="nav-item-erros" class="nav-item">
-          <button id="nav-btn-erros" type="button">
+          <button id="nav-btn-erros" type="button" title="Erros do Sistema">
             <div class="nav-item-content">
-              <span>🛡️</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
               <span class="nav-item-text">Erros do Sistema</span>
             </div>
             <span id="badge-count-erros" class="nav-badge">0</span>
@@ -119,9 +155,9 @@
         </li>
 
         <li id="nav-item-feedbacks" class="nav-item">
-          <button id="nav-btn-feedbacks" type="button">
+          <button id="nav-btn-feedbacks" type="button" title="Feedbacks dos Usuários">
             <div class="nav-item-content">
-              <span>💬</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               <span class="nav-item-text">Feedbacks dos Usuários</span>
             </div>
             <span id="badge-count-feedbacks" class="nav-badge">0</span>
@@ -129,9 +165,9 @@
         </li>
 
         <li id="nav-item-noticias" class="nav-item">
-          <button id="nav-btn-noticias" type="button">
+          <button id="nav-btn-noticias" type="button" title="Notícias aos Devs">
             <div class="nav-item-content">
-              <span>📰</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>
               <span class="nav-item-text">Notícias aos Devs</span>
             </div>
             <span id="badge-count-noticias" class="nav-badge">0</span>
@@ -140,30 +176,39 @@
       </ul>
 
       <!-- Perfil Logado no Rodapé da Sidebar -->
-      <div style="padding-top:1.25rem;border-top:var(--glass-border-subtle);display:flex;align-items:center;justify-content:space-between;gap:0.5rem;">
-        <div style="display:flex;flex-direction:column;overflow:hidden;">
+      <div class="sidebar-footer">
+        <div class="user-details">
           <span id="user-role-display" style="font-size:0.75rem;font-weight:700;color:var(--color-primary);text-transform:uppercase;">CEO</span>
           <span id="user-email-display" class="user-name" style="font-size:0.8rem;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">ceo@systekna.com</span>
         </div>
         <button id="logout-btn" type="button" class="btn btn-secondary btn-sm" title="Encerrar sessão" style="padding:0.35rem 0.65rem;">
-          🚪
+          <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         </button>
       </div>
     </aside>
 
-    <!-- TOPBAR -->
+    <!-- TOPBAR (LIMPA, RESPONSIVA, SEM LIVE-ISLAND) -->
     <header class="topbar">
-      <!-- Ilha Viva -->
-      <div id="live-island" class="live-island">
-        <div class="status-dot"></div>
-        <span id="live-island-text">Inicializando telemetria de governança...</span>
+      <div class="topbar-left">
+        <button id="menu-toggle-btn" type="button" class="menu-toggle-btn" aria-label="Abrir ou fechar menu" title="Diminuir ou abrir menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="topbar-title">
+          <span class="topbar-title-main">Governança da Systekna</span>
+          <span class="topbar-title-sub">Painel Soberano de Gestão & Telemetria</span>
+        </div>
       </div>
 
-      <!-- Links Rápidos -->
-      <div style="display:flex;align-items:center;gap:1rem;">
+      <!-- Ações da Topbar -->
+      <div class="topbar-right">
+        <button id="pwa-install-btn" type="button" class="btn btn-secondary btn-sm" style="display:none;" title="Instalar aplicativo PWA">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon" style="margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>Instalar App</span>
+        </button>
         <span class="badge badge-info" style="font-size:0.75rem;">Firebase: systekna-feedback</span>
         <a href="https://github.com/CelsoAlmeidaLF/governanca-systekna" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">
-          🐙 GitHub Repo
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon" style="margin-right:4px;"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          <span>GitHub Repo</span>
         </a>
       </div>
     </header>
@@ -185,7 +230,7 @@
           <div class="glass-card stat-card">
             <div class="stat-header">
               <span>SOLICITAÇÕES PENDENTES</span>
-              <span>⏳</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             </div>
             <div id="user-pendentes-count" class="stat-value">0</div>
             <div class="stat-subtext">Aguardando homologação de governança</div>
@@ -194,7 +239,7 @@
           <div class="glass-card stat-card">
             <div class="stat-header">
               <span>COMÉRCIOS HOMOLOGADOS</span>
-              <span>🏢</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg>
             </div>
             <div id="user-aprovados-count" class="stat-value">0</div>
             <div class="stat-subtext">Operando em conformidade</div>
@@ -203,7 +248,7 @@
           <div class="glass-card stat-card">
             <div class="stat-header">
               <span>SALÃO & MESAS LIBERADAS</span>
-              <span>🍽️</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M18 2v6a3 3 0 0 1-3 3 3 3 0 0 1-3-3V2"/><path d="M15 2v10v10"/><path d="M7 2v20"/></svg>
             </div>
             <div id="user-com-mesas-count" class="stat-value">0</div>
             <div class="stat-subtext">Módulo de comandas autorizado</div>
@@ -212,7 +257,7 @@
           <div class="glass-card stat-card">
             <div class="stat-header">
               <span>MODO BALCÃO PURO</span>
-              <span>⚡</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
             </div>
             <div id="user-sem-mesas-count" class="stat-value">0</div>
             <div class="stat-subtext">Lojas de Salgados / Adegas (sem mesas)</div>
@@ -222,10 +267,10 @@
         <!-- Sub-Navegação de Abas -->
         <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:1.5rem;border-bottom:var(--glass-border-subtle);padding-bottom:0.75rem;">
           <button id="subtab-btn-solicitacoes" type="button" class="btn btn-secondary active">
-            📋 Fila de Solicitações de Novos Gestores
+            Fila de Solicitações de Novos Gestores
           </button>
           <button id="subtab-btn-tenants" type="button" class="btn btn-secondary">
-            🏢 Tenants & Licenças Ativas (Governança Avançada)
+            Tenants & Licenças Ativas (Governança Avançada)
           </button>
         </div>
 
@@ -233,7 +278,9 @@
         <div id="panel-solicitacoes">
           <div class="toolbar">
             <div class="search-input-group">
-              <span class="search-icon">🔍</span>
+              <span class="search-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              </span>
               <input type="text" id="user-search-input" placeholder="Buscar por usuário, comércio, CNPJ ou tipo...">
             </div>
 
@@ -274,7 +321,7 @@
           <div class="glass-card stat-card">
             <div class="stat-header">
               <span>ERROS ABERTOS</span>
-              <span>⚠️</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             </div>
             <div id="err-abertos" class="stat-value" style="color:#ff5277;">0</div>
             <div class="stat-subtext">Ocorrências aguardando correção</div>
@@ -283,7 +330,7 @@
           <div class="glass-card stat-card">
             <div class="stat-header">
               <span>ÚLTIMAS 24 HORAS</span>
-              <span>🔥</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
             </div>
             <div id="err-24h" class="stat-value">0</div>
             <div class="stat-subtext">Incidentes em runtime recente</div>
@@ -292,7 +339,7 @@
           <div class="glass-card stat-card">
             <div class="stat-header">
               <span>RESOLVIDOS</span>
-              <span>✓</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><polyline points="20 6 9 17 4 12"/></svg>
             </div>
             <div id="err-resolvidos" class="stat-value" style="color:var(--color-success);">0</div>
             <div class="stat-subtext">Falhas homologadas e tratadas</div>
@@ -301,7 +348,7 @@
           <div class="glass-card stat-card">
             <div class="stat-header">
               <span>TOTAL DE REGISTROS</span>
-              <span>📊</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
             </div>
             <div id="err-total" class="stat-value">0</div>
             <div class="stat-subtext">Volume global de telemetria</div>
@@ -311,7 +358,9 @@
         <!-- Toolbar de Erros -->
         <div class="toolbar">
           <div class="search-input-group">
-            <span class="search-icon">🔍</span>
+            <span class="search-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </span>
             <input type="text" id="err-search-input" placeholder="Buscar por mensagem, módulo, versão ou stack...">
           </div>
 
@@ -359,7 +408,7 @@
           </div>
 
           <button id="fb-export-csv-btn" class="btn btn-secondary">
-            📥 Exportar Relatório em CSV
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon" style="margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Exportar Relatório em CSV
           </button>
         </div>
 
@@ -368,7 +417,7 @@
           <div class="glass-card stat-card">
             <div class="stat-header">
               <span>MÉDIA DE SATISFAÇÃO</span>
-              <span>⭐</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
             </div>
             <div class="stat-value">
               <span id="fb-media">0.0</span>
@@ -380,7 +429,7 @@
           <div class="glass-card stat-card">
             <div class="stat-header">
               <span>NOVOS NÃO LIDOS</span>
-              <span>📬</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
             </div>
             <div id="fb-novos" class="stat-value" style="color:var(--color-primary);">0</div>
             <div class="stat-subtext">Aguardando análise da equipe</div>
@@ -389,7 +438,7 @@
           <div class="glass-card stat-card">
             <div class="stat-header">
               <span>TOTAL DE FEEDBACKS</span>
-              <span>💬</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             </div>
             <div id="fb-total" class="stat-value">0</div>
             <div class="stat-subtext">Coletados em todo o ecossistema</div>
@@ -398,7 +447,7 @@
           <div class="glass-card stat-card">
             <div class="stat-header">
               <span>DISTRIBUIÇÃO DE NOTAS</span>
-              <span>📈</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
             </div>
             <div id="fb-distribuicao" style="display:flex;flex-direction:column;gap:0.25rem;margin-top:0.4rem;">
               <!-- Barras de notas preenchidas via FeedbackView -->
@@ -409,7 +458,9 @@
         <!-- Toolbar de Feedbacks -->
         <div class="toolbar">
           <div class="search-input-group">
-            <span class="search-icon">🔍</span>
+            <span class="search-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </span>
             <input type="text" id="fb-search-input" placeholder="Buscar em mensagens, e-mails ou estabelecimentos...">
           </div>
 
@@ -457,14 +508,16 @@
           </div>
 
           <button id="nova-noticia-btn" class="btn btn-primary">
-            ✍️ Publicar Comunicado aos Devs
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon" style="margin-right:4px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Publicar Comunicado aos Devs
           </button>
         </div>
 
         <!-- Toolbar de Notícias -->
         <div class="toolbar">
           <div class="search-input-group">
-            <span class="search-icon">🔍</span>
+            <span class="search-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </span>
             <input type="text" id="news-search-input" placeholder="Buscar comunicados por título, tags ou conteúdo...">
           </div>
 
@@ -515,11 +568,11 @@
           <div class="form-group">
             <label class="form-label" for="noticia-categoria">Categoria Técnica</label>
             <select id="noticia-categoria" class="form-input">
-              <option value="arquitetura" selected>🏛️ Arquitetura & ADR</option>
-              <option value="release">🚀 Release / Versão</option>
-              <option value="seguranca">🛡️ Segurança & Hardening</option>
-              <option value="cloud">☁️ Infraestrutura & Firebase</option>
-              <option value="governanca">⚖️ Diretrizes de Governança</option>
+              <option value="arquitetura" selected>Arquitetura & ADR</option>
+              <option value="release">Release / Versão</option>
+              <option value="seguranca">Segurança & Hardening</option>
+              <option value="cloud">Infraestrutura & Firebase</option>
+              <option value="governanca">Diretrizes de Governança</option>
             </select>
           </div>
 
@@ -553,7 +606,7 @@
             Cancelar
           </button>
           <button type="submit" class="btn btn-primary">
-            🚀 Publicar Comunicado
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-icon" style="margin-right:4px;"><polyline points="20 6 9 17 4 12"/></svg> Publicar Comunicado
           </button>
         </div>
       </form>
@@ -561,6 +614,6 @@
   </div>
 
   <!-- Script Principal Modular -->
-  <script type="module" src="js/main.js?v=1.0.3"></script>
+  <script type="module" src="js/main.js?v=1.0.5"></script>
 </body>
 </html>

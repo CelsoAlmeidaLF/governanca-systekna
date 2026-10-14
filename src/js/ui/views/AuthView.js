@@ -1,6 +1,9 @@
+import { Icons } from '../icons/Icons.js';
+
 /**
  * UI View: AuthView
  * Controla os elementos do DOM referentes ao login e cadastro de novo usuário no Firebase Auth.
+ * REGRA ABSOLUTA: Proibido o uso de emojis como ícones e obrigatório botão de visualizar/ocultar senha.
  */
 export class AuthView {
   constructor({ onLogin, onRegister, onLogout, onResetPassword }) {
@@ -22,8 +25,11 @@ export class AuthView {
     this._nameInput = document.getElementById('register-name');
     this._emailInput = document.getElementById('login-email');
     this._passwordInput = document.getElementById('login-password');
+    this._toggleLoginPassBtn = document.getElementById('toggle-login-password-btn');
+
     this._confirmPasswordGroup = document.getElementById('form-group-confirm-password');
     this._confirmPasswordInput = document.getElementById('register-confirm-password');
+    this._toggleConfirmPassBtn = document.getElementById('toggle-confirm-password-btn');
 
     this._loginError = document.getElementById('login-error');
     this._loginBtn = document.getElementById('login-btn');
@@ -44,6 +50,21 @@ export class AuthView {
       this._tabLoginBtn.addEventListener('click', () => this.setMode(false));
       this._tabRegisterBtn.addEventListener('click', () => this.setMode(true));
     }
+
+    // Configuração obrigatória de Visualizar / Ocultar Senha
+    const configurarToggleSenha = (btn, input) => {
+      if (!btn || !input) return;
+      btn.innerHTML = Icons.svg('eye', { size: 16 });
+      btn.addEventListener('click', () => {
+        const isPassword = input.type === 'password';
+        input.type = isPassword ? 'text' : 'password';
+        btn.innerHTML = isPassword ? Icons.svg('eyeOff', { size: 16 }) : Icons.svg('eye', { size: 16 });
+        btn.setAttribute('aria-label', isPassword ? 'Ocultar senha' : 'Visualizar senha');
+      });
+    };
+
+    configurarToggleSenha(this._toggleLoginPassBtn, this._passwordInput);
+    configurarToggleSenha(this._toggleConfirmPassBtn, this._confirmPasswordInput);
 
     if (this._loginForm) {
       this._loginForm.addEventListener('submit', async (e) => {

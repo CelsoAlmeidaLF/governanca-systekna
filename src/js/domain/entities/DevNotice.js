@@ -33,11 +33,11 @@ export class DevNotice {
 
   getRotuloCategoria() {
     const rotulos = {
-      arquitetura: '🏛️ Arquitetura & ADR',
-      release: '🚀 Release / Versão',
-      seguranca: '🛡️ Segurança & Hardening',
-      cloud: '☁️ Infraestrutura & Firebase',
-      governanca: '⚖️ Diretrizes de Governança'
+      arquitetura: 'Arquitetura & ADR',
+      release: 'Release / Versão',
+      seguranca: 'Segurança & Hardening',
+      cloud: 'Infraestrutura & Firebase',
+      governanca: 'Diretrizes de Governança'
     };
     return rotulos[this.categoria] || this.categoria;
   }

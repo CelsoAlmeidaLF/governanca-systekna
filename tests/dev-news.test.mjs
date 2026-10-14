@@ -12,7 +12,7 @@ test('DevNotice: validação de campos obrigatórios e categorização', () => {
   });
 
   assert.equal(noticia.isValido(), true);
-  assert.equal(noticia.getRotuloCategoria(), '🏛️ Arquitetura & ADR');
+  assert.equal(noticia.getRotuloCategoria(), 'Arquitetura & ADR');
   assert.equal(noticia.getBadgeClasse(), 'badge-info');
 });
 
