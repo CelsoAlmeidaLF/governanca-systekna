@@ -257,7 +257,7 @@ export class UserApprovalView {
             <div>
               <div style="font-size:0.75rem;color:var(--text-dim);">Versão do Cliente / Mínima</div>
               <div style="font-size:0.9rem;color:var(--text-main);font-family:var(--font-mono);">
-                v${escapeHtml(t.metricasCompliance.versaoCliente)} (mín: v${escapeHtml(t.politicaVersao.versaoMinima)})
+                ${t.metricasCompliance.versaoCliente ? 'v' + escapeHtml(t.metricasCompliance.versaoCliente) : '—'} (mín: ${t.politicaVersao.versaoMinima ? 'v' + escapeHtml(t.politicaVersao.versaoMinima) : 'sem política'})
               </div>
             </div>
             <div>

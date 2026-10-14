@@ -114,7 +114,7 @@ export class FirestoreGovernanceAdapter {
     return docs.map(({ id, data: d }) => ({
       id,
       app: d.app || 'BARGESTAO',
-      versao: d.versaoApp || d.versao || '9.3.0',
+      versao: d.versaoApp || d.versao || '—',
       modulo: d.modulo || 'geral',
       mensagem: d.mensagem || '',
       stackTrace: d.stackTrace || d.stack || '',
