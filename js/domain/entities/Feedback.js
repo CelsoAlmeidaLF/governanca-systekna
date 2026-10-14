@@ -10,6 +10,7 @@ export class Feedback {
     nota = 5,
     mensagem = '',
     usuario = 'anonimo',
+    uid = '',
     email = '',
     estabelecimento = '',
     status = 'novo',
@@ -22,6 +23,8 @@ export class Feedback {
     this.nota = Number.isInteger(Number(nota)) && Number(nota) >= 1 && Number(nota) <= 5 ? Number(nota) : 5;
     this.mensagem = String(mensagem || '').trim();
     this.usuario = String(usuario || 'anonimo').trim();
+    // Impressão digital do cadastro no app de origem (vazio em apps sem cadastro)
+    this.uid = /^[0-9a-f]{32}$/.test(String(uid || '')) ? String(uid) : '';
     this.email = String(email || '').trim();
     this.estabelecimento = String(estabelecimento || '').trim();
     this.status = status;
@@ -57,6 +60,7 @@ export class Feedback {
       nota: this.nota,
       mensagem: this.mensagem,
       usuario: this.usuario,
+      uid: this.uid,
       email: this.email,
       estabelecimento: this.estabelecimento,
       status: this.status,
