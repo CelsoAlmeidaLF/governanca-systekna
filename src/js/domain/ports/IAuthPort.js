@@ -7,6 +7,10 @@ export class IAuthPort {
     throw new Error('Método signInWithEmail não implementado');
   }
 
+  async createUserWithEmail(email, password, displayName) {
+    throw new Error('Método createUserWithEmail não implementado');
+  }
+
   async signOut() {
     throw new Error('Método signOut não implementado');
   }
