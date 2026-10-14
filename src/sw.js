@@ -1,6 +1,6 @@
 /* Governança Systekna · service worker (mesmo modelo do painel de feedback e do Finanças da Casa).
    Troque CACHE_NAME a cada versão (igual ao data-vault-version do index.html); o teste pwa confere. */
-const CACHE_NAME = 'governanca-systekna-v1.2.0';
+const CACHE_NAME = 'governanca-systekna-v1.3.0';
 const APP_SHELL = [
   './', './index.html', './manifest.json', './stk-pkg-bip39-pt.js', './stk-pkg-financ-icons.js', './stk-pkg-secure-ui.css',
   './stk-pkg-secure-ui.js', './stk-pkg-secure-vault.js', './css/aero.css', './fonts/fonts.css', './fonts/open-sans.woff2',
@@ -13,7 +13,7 @@ const APP_SHELL = [
   './js/infrastructure/adapters/FirebaseAuthAdapter.js', './js/infrastructure/adapters/FirestoreGovernanceAdapter.js',
   './js/infrastructure/config/FirebaseApp.js', './js/infrastructure/config/FirebaseConfig.js',
   './js/ui/controllers/GovernanceAppController.js', './js/ui/controllers/SessaoController.js', './js/ui/icons/Icons.js',
-  './js/ui/utils/dialogo.js', './js/ui/utils/escapeHtml.js', './js/ui/utils/modo.js', './js/ui/utils/notificar.js',
+  './js/ui/utils/dialogo.js', './js/ui/utils/escapeHtml.js', './js/ui/utils/formatarUid.js', './js/ui/utils/modo.js', './js/ui/utils/notificar.js',
   './js/ui/utils/seletor.js', './js/ui/views/AuthView.js', './js/ui/views/DevNewsView.js', './js/ui/views/ErrorManagementView.js',
   './js/ui/views/FeedbackView.js', './js/ui/views/UserApprovalView.js',
   './icon-192.png?v=2', './icon-512.png?v=2', './icon-maskable-192.png?v=2', './icon-maskable-512.png?v=2',

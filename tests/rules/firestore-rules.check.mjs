@@ -54,6 +54,21 @@ await t('app não desliga o kill-switch', assertFails(updateDoc(doc(anon, 'tenan
 await t('anônimo não lista tenants', assertFails(getDocs(collection(anon, 'tenants_governanca'))));
 await t('usuário sem claim não escreve tenant', assertFails(setDoc(doc(user, 'tenants_governanca', uuid()), { usuario: 'x' })));
 
+// UID = impressão digital do cadastro (32 hex): o app cria e lê a própria solicitação/licença por ele
+const fp = () => Array.from(crypto.getRandomValues(new Uint8Array(16)), b => b.toString(16).padStart(2, '0')).join('');
+const uidFp = fp();
+await t('app cria solicitação com impressão digital', assertSucceeds(setDoc(doc(anon, 'solicitacoes_governanca', uidFp), sol())));
+await t('app lê a solicitação pela impressão digital', assertSucceeds(getDoc(doc(anon, 'solicitacoes_governanca', uidFp))));
+await t('impressão digital em maiúsculas negada', assertFails(setDoc(doc(anon, 'solicitacoes_governanca', fp().toUpperCase()), sol())));
+await t('impressão digital curta negada', assertFails(setDoc(doc(anon, 'solicitacoes_governanca', fp().slice(0, 31)), sol())));
+await t('admin cria tenant na impressão digital', assertSucceeds(setDoc(doc(admin, 'tenants_governanca', uidFp), { usuario: 'bar_do_ze', licenca: { status: 'ativo' }, permissoesModulos: { permiteMesas: false } })));
+await t('app lê a licença pela impressão digital', assertSucceeds(getDoc(doc(anon, 'tenants_governanca', uidFp))));
+await t('app não muda as próprias permissões', assertFails(updateDoc(doc(anon, 'tenants_governanca', uidFp), { 'permissoesModulos.permiteMesas': true })));
+await t('feedback com uid válido', assertSucceeds(setDoc(doc(anon, 'feedbacks_usuarios', uuid()), { ...fb(), uid: uidFp })));
+await t('feedback com uid inválido negado', assertFails(setDoc(doc(anon, 'feedbacks_usuarios', uuid()), { ...fb(), uid: '<x>' })));
+await t('telemetria com uid válido', assertSucceeds(setDoc(doc(anon, 'telemetria_erros', uuid()), { ...err(), uid: uidFp })));
+await t('telemetria com uid inválido negada', assertFails(setDoc(doc(anon, 'telemetria_erros', uuid()), { ...err(), uid: 123 })));
+
 await t('anônimo não lê notícias', assertFails(getDocs(collection(anon, 'noticias_devs'))));
 await t('usuário sem claim não publica notícia', assertFails(setDoc(doc(user, 'noticias_devs', 'n1'), { titulo: 'x' })));
 await t('admin publica notícia', assertSucceeds(setDoc(doc(admin, 'noticias_devs', 'n1'), { titulo: 'x' })));

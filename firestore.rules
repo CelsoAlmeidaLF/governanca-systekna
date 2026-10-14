@@ -105,11 +105,27 @@ service cloud.firestore {
       return id.matches('^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$');
     }
 
+    // UID do usuário = impressão digital gerada no cadastro (SHA-256 truncado em 128 bits, hex)
+    function uidDigital(id) {
+      return id is string && id.matches('^[0-9a-f]{32}$');
+    }
+
+    // Id de solicitação/tenant: impressão digital (atual) ou UUID v4 (cadastros antigos)
+    function idCadastro(id) {
+      return uidDigital(id) || idSeguro(id);
+    }
+
+    // Erros e feedbacks podem levar o UID do cadastro, para a governança saber de quem são
+    function uidOpcional(d) {
+      return !('uid' in d) || uidDigital(d.uid);
+    }
+
     match /feedbacks_usuarios/{id} {
       allow read, update, delete: if gestor();
       allow create: if gestor() || (
         idSeguro(id)
-        && request.resource.data.keys().hasOnly(['app', 'usuario', 'estabelecimento', 'tipo', 'avaliacao', 'mensagem', 'status', 'enviadoEm'])
+        && request.resource.data.keys().hasOnly(['app', 'uid', 'usuario', 'estabelecimento', 'tipo', 'avaliacao', 'mensagem', 'status', 'enviadoEm'])
+        && uidOpcional(request.resource.data)
         && request.resource.data.keys().hasAll(['app', 'tipo', 'avaliacao', 'mensagem', 'status', 'enviadoEm'])
         && appGovernanca(request.resource.data.app)
         && (!('usuario' in request.resource.data) || identificador(request.resource.data.usuario))
@@ -127,7 +143,8 @@ service cloud.firestore {
       allow read, update, delete: if gestor();
       allow create: if gestor() || (
         idSeguro(id)
-        && request.resource.data.keys().hasOnly(['app', 'usuario', 'versaoApp', 'mensagem', 'modulo', 'stackTrace', 'ambiente', 'dataOcorrencia', 'resolvido'])
+        && request.resource.data.keys().hasOnly(['app', 'uid', 'usuario', 'versaoApp', 'mensagem', 'modulo', 'stackTrace', 'ambiente', 'dataOcorrencia', 'resolvido'])
+        && uidOpcional(request.resource.data)
         && request.resource.data.keys().hasAll(['app', 'versaoApp', 'mensagem', 'modulo', 'dataOcorrencia', 'resolvido'])
         && appGovernanca(request.resource.data.app)
         && versaoValida(request.resource.data.versaoApp)
@@ -149,10 +166,10 @@ service cloud.firestore {
     }
 
     match /solicitacoes_governanca/{id} {
-      allow get: if gestor() || idSeguro(id);
+      allow get: if gestor() || idCadastro(id);
       allow list, update, delete: if gestor();
       allow create: if gestor() || (
-        idSeguro(id)
+        idCadastro(id)
         && request.resource.data.keys().hasOnly(['usuario', 'cnpj', 'nomeEstabelecimento', 'tipoComercio', 'status', 'permiteMesas', 'solicitadoEm', 'aprovadoEm', 'aprovadoPor', 'motivoDecisao'])
         && request.resource.data.keys().hasAll(['usuario', 'status', 'permiteMesas', 'solicitadoEm'])
         && request.resource.data.usuario is string
@@ -172,8 +189,8 @@ service cloud.firestore {
     }
 
     match /tenants_governanca/{id} {
-      // O app lê a própria licença (kill-switch, módulos) pelo id da solicitação de origem.
-      allow get: if gestor() || idSeguro(id);
+      // O app lê a própria licença (acesso, kill-switch, módulos) pelo UID da solicitação de origem.
+      allow get: if gestor() || idCadastro(id);
       allow list, create, update, delete: if gestor();
     }
 

@@ -1,5 +1,6 @@
 import { Icons } from '../icons/Icons.js';
 import { escapeHtml } from '../utils/escapeHtml.js';
+import { formatarUid } from '../utils/formatarUid.js';
 import { confirmar, pedirTexto } from '../utils/dialogo.js';
 import { seletor } from '../utils/seletor.js';
 
@@ -118,6 +119,10 @@ export class UserApprovalView {
               <div style="font-size:0.95rem;color:${s.cnpj ? 'var(--color-primary)' : 'var(--text-muted)'};font-family:var(--font-mono);">
                 ${escapeHtml(s.getCnpjFormatado())}
               </div>
+            </div>
+            <div>
+              <div style="font-size:0.75rem;color:var(--text-dim);text-transform:uppercase;font-weight:600;">Impressão digital (UID)</div>
+              <div style="font-size:0.9rem;color:var(--text-main);font-family:var(--font-mono);overflow-wrap:anywhere;">${escapeHtml(formatarUid(s.id))}</div>
             </div>
           </div>
 
@@ -244,6 +249,10 @@ export class UserApprovalView {
             <div>
               <div style="font-size:0.75rem;color:var(--text-dim);">Estabelecimento</div>
               <div style="font-size:1rem;color:var(--ink);font-weight:600;">${this._sanitizarHtml(t.nomeComercio)}</div>
+            </div>
+            <div>
+              <div style="font-size:0.75rem;color:var(--text-dim);text-transform:uppercase;font-weight:600;">Impressão digital (UID)</div>
+              <div style="font-size:0.85rem;color:var(--text-main);font-family:var(--font-mono);overflow-wrap:anywhere;">${escapeHtml(formatarUid(t.id))}</div>
             </div>
             <div>
               <div style="font-size:0.75rem;color:var(--text-dim);">Versão do Cliente / Mínima</div>

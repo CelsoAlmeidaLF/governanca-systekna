@@ -13,6 +13,7 @@ export class SystemError {
     origem = '',
     tipo = 'erro',
     usuario = 'anonimo',
+    uid = '',
     ambiente = {},
     resolvido = false,
     criadoEm = new Date().toISOString()
@@ -26,6 +27,7 @@ export class SystemError {
     this.origem = String(origem);
     this.tipo = tipo;
     this.usuario = String(usuario);
+    this.uid = /^[0-9a-f]{32}$/.test(String(uid || '')) ? String(uid) : '';
     this.ambiente = typeof ambiente === 'object' && ambiente !== null ? ambiente : {};
     this.resolvido = Boolean(resolvido);
     this.criadoEm = criadoEm instanceof Date ? criadoEm.toISOString() : String(criadoEm);
@@ -56,7 +58,7 @@ export class SystemError {
 - **Aplicação:** \`${this.app}\`
 - **Versão:** \`${this.versao}\`
 - **Módulo:** \`${this.modulo}\`
-- **Usuário:** \`${this.usuario}\`
+- **Usuário:** \`${this.usuario}\`${this.uid ? ` (UID \`${this.uid}\`)` : ''}
 - **Data da Ocorrência:** \`${this.criadoEm}\`
 
 #### Mensagem de Erro:
@@ -94,6 +96,7 @@ ${this.stackTrace || 'Sem stack trace registrado'}
       origem: this.origem,
       tipo: this.tipo,
       usuario: this.usuario,
+      uid: this.uid,
       ambiente: this.ambiente,
       resolvido: this.resolvido,
       criadoEm: this.criadoEm,
