@@ -51,7 +51,7 @@ export class SystemError {
 
     const repo = repos[this.app] || 'CelsoAlmeidaLF/multi-cm';
     const titulo = encodeURIComponent(`[BUG Telemetria ${this.app} ${this.versao}] ${this.mensagem.slice(0, 80)}`);
-    const corpo = encodeURIComponent(`### 🛑 Relatório de Falha Sanitizado (Governança Systekna)
+    const corpo = encodeURIComponent(`### Relatório de Falha Sanitizado (Governança Systekna)
 
 - **Aplicação:** \`${this.app}\`
 - **Versão:** \`${this.versao}\`
@@ -59,17 +59,17 @@ export class SystemError {
 - **Usuário:** \`${this.usuario}\`
 - **Data da Ocorrência:** \`${this.criadoEm}\`
 
-#### 📝 Mensagem de Erro:
+#### Mensagem de Erro:
 \`\`\`
 ${this.mensagem}
 \`\`\`
 
-#### 🥞 Stack Trace:
+#### Stack Trace:
 \`\`\`
 ${this.stackTrace || 'Sem stack trace registrado'}
 \`\`\`
 
-#### 🌐 Ambiente do Cliente:
+#### Ambiente do Cliente:
 - **User Agent:** \`${this.ambiente.userAgent || 'N/A'}\`
 - **Online:** \`${this.ambiente.online !== false}\`
 - **Viewport:** \`${this.ambiente.viewport || 'N/A'}\`

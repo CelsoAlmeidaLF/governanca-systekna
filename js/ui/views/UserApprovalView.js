@@ -1,7 +1,10 @@
+import { Icons } from '../icons/Icons.js';
+
 /**
  * UI View: UserApprovalView
  * Controla a esteira de aprovação de novos cadastros (com CNPJ opcional e toggle permiteMesas)
  * e o painel de governança avançada de tenants ativos (módulos, cotas e kill-switch remoto).
+ * REGRA ABSOLUTA: Proibido o uso de emojis como ícones visuais na interface.
  */
 export class UserApprovalView {
   constructor({ onAprovar, onReprovar, onAlternarKillSwitch, onAtualizarModulos, onAtualizarPlano }) {
@@ -74,7 +77,7 @@ export class UserApprovalView {
     if (solicitacoes.length === 0) {
       this._solicitacoesContainer.innerHTML = `
         <div class="glass-card" style="text-align:center;padding:3rem;color:var(--text-muted);">
-          <div style="font-size:2.5rem;margin-bottom:0.75rem;">👥</div>
+          <div style="margin-bottom:0.75rem;color:var(--text-dim);">${Icons.svg('users', { size: 42 })}</div>
           <p>Nenhuma solicitação de acesso pendente na esteira da Governança.</p>
         </div>
       `;
@@ -89,7 +92,6 @@ export class UserApprovalView {
         ? '<span class="badge badge-crit">REPROVADO</span>'
         : '<span class="badge badge-warn">PENDENTE DE AVALIAÇÃO</span>';
 
-      // Sugestão de mesas baseado no tipo de comércio cadastrado
       const sugereMesas = s.tipoComercio === 'bar';
 
       return `
@@ -126,7 +128,7 @@ export class UserApprovalView {
             <!-- Painel de Decisão de Governança -->
             <div style="padding:1rem;background:rgba(10, 18, 34, 0.6);border:var(--glass-border-subtle);border-radius:var(--border-radius-md);display:flex;flex-direction:column;gap:1rem;">
               <div style="font-size:0.85rem;font-weight:600;color:var(--color-primary);display:flex;align-items:center;gap:0.5rem;">
-                ⚖️ Decisão Soberana da Governança Systekna
+                ${Icons.svg('shield', { size: 16 })} Decisão Soberana da Governança Systekna
               </div>
 
               <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;">
@@ -157,10 +159,10 @@ export class UserApprovalView {
 
               <div style="display:flex;align-items:center;gap:0.75rem;margin-top:0.5rem;">
                 <button class="btn btn-success aprovar-btn" data-index="${index}">
-                  ✓ Homologar & Liberar Acesso
+                  ${Icons.svg('check', { size: 15 })} Homologar & Liberar Acesso
                 </button>
                 <button class="btn btn-danger reprovar-btn" data-index="${index}">
-                  ✕ Rejeitar Solicitação
+                  ${Icons.svg('x', { size: 15 })} Rejeitar Solicitação
                 </button>
               </div>
             </div>
@@ -168,7 +170,7 @@ export class UserApprovalView {
             <div style="padding:0.75rem;background:rgba(255,255,255,0.03);border-radius:var(--border-radius-sm);font-size:0.82rem;color:var(--text-muted);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
               <div>
                 <strong>Veredito:</strong> ${s.status.toUpperCase()} | 
-                <strong>Módulo de Mesas:</strong> ${s.permiteMesas ? '🟢 HABILITADO' : '🔴 BLOQUEADO'} |
+                <strong>Módulo de Mesas:</strong> ${s.permiteMesas ? 'HABILITADO' : 'BLOQUEADO'} |
                 <strong>Auditor:</strong> ${this._sanitizarHtml(s.aprovadoPor || 'Governança')}
               </div>
               <div>${s.motivoDecisao ? `<em>"${this._sanitizarHtml(s.motivoDecisao)}"</em>` : ''}</div>
@@ -178,7 +180,7 @@ export class UserApprovalView {
       `;
     }).join('');
 
-    // Listeners para os botões de ação
+    // Listeners
     this._solicitacoesContainer.querySelectorAll('.aprovar-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const idx = Number(btn.getAttribute('data-index'));
@@ -212,7 +214,7 @@ export class UserApprovalView {
     if (tenants.length === 0) {
       this._tenantsContainer.innerHTML = `
         <div class="glass-card" style="text-align:center;padding:3rem;color:var(--text-muted);">
-          <div style="font-size:2.5rem;margin-bottom:0.75rem;">🏢</div>
+          <div style="margin-bottom:0.75rem;color:var(--text-dim);">${Icons.svg('building', { size: 42 })}</div>
           <p>Nenhum tenant ativo registrado no banco de governança.</p>
         </div>
       `;
@@ -235,7 +237,7 @@ export class UserApprovalView {
 
             <!-- Kill-Switch Remoto -->
             <button class="btn ${isBloqueado ? 'btn-success' : 'btn-danger'} btn-sm kill-switch-btn" data-index="${index}">
-              ${isBloqueado ? '🔓 Desbloquear Terminal' : '⛔ Ativar Kill-Switch Remoto'}
+              ${isBloqueado ? `${Icons.svg('check', { size: 14 })} Desbloquear Terminal` : `${Icons.svg('lock', { size: 14 })} Ativar Kill-Switch Remoto`}
             </button>
           </div>
 
@@ -253,7 +255,7 @@ export class UserApprovalView {
             <div>
               <div style="font-size:0.75rem;color:var(--text-dim);">Último Backup</div>
               <div style="font-size:0.9rem;color:var(--text-main);">
-                ${t.metricasCompliance.ultimoBackupEm ? new Date(t.metricasCompliance.ultimoBackupEm).toLocaleDateString('pt-BR') : '⚠️ Sem registro'}
+                ${t.metricasCompliance.ultimoBackupEm ? new Date(t.metricasCompliance.ultimoBackupEm).toLocaleDateString('pt-BR') : 'Sem registro'}
               </div>
             </div>
           </div>

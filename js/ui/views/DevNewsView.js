@@ -1,6 +1,9 @@
+import { Icons } from '../icons/Icons.js';
+
 /**
  * UI View: DevNewsView
  * Controla a renderização do feed de notícias e comunicados para desenvolvedores e modal de publicação.
+ * REGRA ABSOLUTA: Proibido o uso de emojis como ícones visuais na interface.
  */
 export class DevNewsView {
   constructor({ onPublicarNoticia, onExcluirNoticia }) {
@@ -100,7 +103,7 @@ export class DevNewsView {
     if (noticias.length === 0) {
       this._container.innerHTML = `
         <div class="glass-card" style="text-align:center;padding:3rem;color:var(--text-muted);">
-          <div style="font-size:2.5rem;margin-bottom:0.75rem;">📰</div>
+          <div style="margin-bottom:0.75rem;color:var(--text-dim);">${Icons.svg('newspaper', { size: 42 })}</div>
           <p>Nenhuma notícia ou comunicado encontrado para os filtros selecionados.</p>
         </div>
       `;
@@ -121,7 +124,7 @@ export class DevNewsView {
           <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
             <div style="display:flex;align-items:center;gap:0.65rem;">
               ${prioridadeBadge}
-              <span class="badge badge-neutral">${n.getRotuloCategoria()}</span>
+              <span class="badge badge-neutral">${n.getRotuloCategoria().replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, '').trim()}</span>
             </div>
             <div style="font-size:0.8rem;color:var(--text-dim);">
               ${new Date(n.criadoEm).toLocaleDateString('pt-BR')} • Publicado por ${this._sanitizarHtml(n.autor)}
@@ -146,7 +149,7 @@ export class DevNewsView {
             </div>
 
             <button class="btn btn-danger btn-sm excluir-noticia-btn" data-id="${n.id}" title="Excluir comunicado">
-              🗑️ Excluir
+              ${Icons.svg('trash', { size: 14 })} Excluir
             </button>
           </div>
         </article>

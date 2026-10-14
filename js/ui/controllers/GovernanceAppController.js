@@ -1,7 +1,10 @@
 /**
  * UI Controller: GovernanceAppController
  * Orquestrador principal da SPA de Governança Systekna.
+ * Suporte a menu expansível/retrátil, drawer lateral mobile/tablet e total ausência de emojis.
  */
+import { Icons } from '../icons/Icons.js';
+
 export class GovernanceAppController {
   constructor({
     authService,
@@ -29,8 +32,12 @@ export class GovernanceAppController {
     this._userApprovalView = userApprovalView;
     this._devNewsView = devNewsView;
 
-    this._liveIsland = document.getElementById('live-island');
-    this._liveIslandText = document.getElementById('live-island-text');
+    this._appContainer = document.getElementById('app-container');
+    this._sidebar = document.getElementById('sidebar');
+    this._sidebarBackdrop = document.getElementById('sidebar-backdrop');
+    this._sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
+    this._sidebarCloseBtn = document.getElementById('sidebar-close-btn');
+    this._menuToggleBtn = document.getElementById('menu-toggle-btn');
 
     this._activeTab = 'usuarios';
     this._cache = {
@@ -41,8 +48,105 @@ export class GovernanceAppController {
       noticias: []
     };
 
+    this._setupResponsiveMenu();
     this._setupTabNavigation();
     this._setupDataSubscriptions();
+  }
+
+  _setupResponsiveMenu() {
+    // Restaurar estado salvo de recolhimento no Desktop
+    const isCollapsed = localStorage.getItem('systekna_sidebar_collapsed') === 'true';
+    if (isCollapsed && this._appContainer && window.innerWidth > 1024) {
+      this._appContainer.classList.add('sidebar-collapsed');
+      this._atualizarIconeToggle(true);
+    }
+
+    // Toggle de diminuir ou expandir no desktop
+    if (this._sidebarToggleBtn) {
+      this._sidebarToggleBtn.addEventListener('click', () => {
+        this.toggleSidebarDesktop();
+      });
+    }
+
+    // Toggle geral (menu hambúrguer da topbar)
+    if (this._menuToggleBtn) {
+      this._menuToggleBtn.addEventListener('click', () => {
+        if (window.innerWidth <= 1024) {
+          this.toggleSidebarMobile();
+        } else {
+          this.toggleSidebarDesktop();
+        }
+      });
+    }
+
+    // Fechar drawer no mobile/tablet
+    if (this._sidebarCloseBtn) {
+      this._sidebarCloseBtn.addEventListener('click', () => {
+        this.fecharSidebarMobile();
+      });
+    }
+
+    if (this._sidebarBackdrop) {
+      this._sidebarBackdrop.addEventListener('click', () => {
+        this.fecharSidebarMobile();
+      });
+    }
+
+    // Fechar ao teclar Esc
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        this.fecharSidebarMobile();
+      }
+    });
+
+    // Ajustar em resize de tela
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 1024) {
+        this.fecharSidebarMobile();
+      }
+    });
+  }
+
+  toggleSidebarDesktop() {
+    if (!this._appContainer) return;
+    const collapsed = this._appContainer.classList.toggle('sidebar-collapsed');
+    localStorage.setItem('systekna_sidebar_collapsed', String(collapsed));
+    this._atualizarIconeToggle(collapsed);
+  }
+
+  _atualizarIconeToggle(collapsed) {
+    if (!this._sidebarToggleBtn) return;
+    if (collapsed) {
+      this._sidebarToggleBtn.innerHTML = Icons.svg('sidebarExpand', { size: 18, color: 'currentColor' });
+      this._sidebarToggleBtn.title = 'Expandir menu';
+    } else {
+      this._sidebarToggleBtn.innerHTML = Icons.svg('sidebarCollapse', { size: 18, color: 'currentColor' });
+      this._sidebarToggleBtn.title = 'Diminuir menu';
+    }
+  }
+
+  toggleSidebarMobile() {
+    if (!this._sidebar) return;
+    const isOpen = this._sidebar.classList.toggle('open');
+    if (this._sidebarBackdrop) {
+      if (isOpen) {
+        this._sidebarBackdrop.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      } else {
+        this._sidebarBackdrop.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+  }
+
+  fecharSidebarMobile() {
+    if (this._sidebar) {
+      this._sidebar.classList.remove('open');
+    }
+    if (this._sidebarBackdrop) {
+      this._sidebarBackdrop.classList.remove('active');
+    }
+    document.body.style.overflow = '';
   }
 
   _setupTabNavigation() {
@@ -52,6 +156,10 @@ export class GovernanceAppController {
       if (btn) {
         btn.addEventListener('click', () => {
           this.switchTab(tab);
+          // Fecha o drawer em telas móveis ao trocar de aba
+          if (window.innerWidth <= 1024) {
+            this.fecharSidebarMobile();
+          }
         });
       }
     });
@@ -123,7 +231,6 @@ export class GovernanceAppController {
       this._cache.noticias = this._devNewsService.processarNoticias(noticiasRaw);
 
       this._atualizarViews();
-      this._atualizarLiveIsland();
     } catch (err) {
       console.error('[GovernanceAppController] Erro ao carregar dados:', err);
     }
@@ -165,24 +272,6 @@ export class GovernanceAppController {
 
     const badgeNot = document.getElementById('badge-count-noticias');
     if (badgeNot) badgeNot.textContent = this._cache.noticias.length || '0';
-  }
-
-  _atualizarLiveIsland() {
-    if (!this._liveIsland || !this._liveIslandText) return;
-
-    const metricasErr = this._errorService.calcularMetricas(this._cache.erros);
-    const metricasUsr = this._userApprovalService.calcularMetricas(this._cache.solicitacoes, this._cache.tenants);
-
-    if (metricasErr.ultimas24h > 0) {
-      this._liveIsland.className = 'live-island critical pulse-danger';
-      this._liveIslandText.textContent = `Atenção: ${metricasErr.ultimas24h} falha(s) nas últimas 24h`;
-    } else if (metricasUsr.pendentes > 0) {
-      this._liveIsland.className = 'live-island warning pulse-warning';
-      this._liveIslandText.textContent = `${metricasUsr.pendentes} comércio(s) aguardando homologação`;
-    } else {
-      this._liveIsland.className = 'live-island';
-      this._liveIslandText.textContent = `Governança Systekna Ativa • Todos os sistemas normais`;
-    }
   }
 
   exportarCsvFeedbacks() {

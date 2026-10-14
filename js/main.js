@@ -1,16 +1,48 @@
-import { FirebaseAuthAdapter } from './infrastructure/adapters/FirebaseAuthAdapter.js?v=1.0.3';
-import { FirestoreGovernanceAdapter } from './infrastructure/adapters/FirestoreGovernanceAdapter.js?v=1.0.3';
-import { AuthService } from './application/AuthService.js?v=1.0.3';
-import { FeedbackService } from './application/FeedbackService.js?v=1.0.3';
-import { ErrorManagementService } from './application/ErrorManagementService.js?v=1.0.3';
-import { UserApprovalService } from './application/UserApprovalService.js?v=1.0.3';
-import { DevNewsService } from './application/DevNewsService.js?v=1.0.3';
-import { AuthView } from './ui/views/AuthView.js?v=1.0.3';
-import { FeedbackView } from './ui/views/FeedbackView.js?v=1.0.3';
-import { ErrorManagementView } from './ui/views/ErrorManagementView.js?v=1.0.3';
-import { UserApprovalView } from './ui/views/UserApprovalView.js?v=1.0.3';
-import { DevNewsView } from './ui/views/DevNewsView.js?v=1.0.3';
-import { GovernanceAppController } from './ui/controllers/GovernanceAppController.js?v=1.0.3';
+import { FirebaseAuthAdapter } from './infrastructure/adapters/FirebaseAuthAdapter.js?v=1.0.5';
+import { FirestoreGovernanceAdapter } from './infrastructure/adapters/FirestoreGovernanceAdapter.js?v=1.0.5';
+import { AuthService } from './application/AuthService.js?v=1.0.5';
+import { FeedbackService } from './application/FeedbackService.js?v=1.0.5';
+import { ErrorManagementService } from './application/ErrorManagementService.js?v=1.0.5';
+import { UserApprovalService } from './application/UserApprovalService.js?v=1.0.5';
+import { DevNewsService } from './application/DevNewsService.js?v=1.0.5';
+import { AuthView } from './ui/views/AuthView.js?v=1.0.5';
+import { FeedbackView } from './ui/views/FeedbackView.js?v=1.0.5';
+import { ErrorManagementView } from './ui/views/ErrorManagementView.js?v=1.0.5';
+import { UserApprovalView } from './ui/views/UserApprovalView.js?v=1.0.5';
+import { DevNewsView } from './ui/views/DevNewsView.js?v=1.0.5';
+import { GovernanceAppController } from './ui/controllers/GovernanceAppController.js?v=1.0.5';
+
+// Registro do Service Worker (PWA)
+if ('serviceWorker' in navigator && window.location.protocol.startsWith('http')) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then((reg) => console.log('[PWA] Service Worker registrado:', reg.scope))
+      .catch((err) => console.warn('[PWA] Falha no Service Worker:', err));
+  });
+}
+
+// Suporte à Instalação PWA (Mobile, Tablet & Desktop)
+let deferredInstallPrompt = null;
+const pwaInstallBtn = document.getElementById('pwa-install-btn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  if (pwaInstallBtn) {
+    pwaInstallBtn.style.display = 'inline-flex';
+  }
+});
+
+if (pwaInstallBtn) {
+  pwaInstallBtn.addEventListener('click', async () => {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    const choice = await deferredInstallPrompt.userChoice;
+    console.log('[PWA] Escolha do usuário:', choice.outcome);
+    deferredInstallPrompt = null;
+    pwaInstallBtn.style.display = 'none';
+  });
+}
 
 // Inicialização Principal da Aplicação
 document.addEventListener('DOMContentLoaded', async () => {

@@ -1,6 +1,9 @@
+import { Icons } from '../icons/Icons.js';
+
 /**
  * UI View: FeedbackView
  * Controla a renderização e interatividade do módulo de feedbacks e satisfação dos usuários.
+ * REGRA ABSOLUTA: Proibido o uso de emojis como ícones visuais na interface.
  */
 export class FeedbackView {
   constructor({ onMarcarLido, onExcluir, onExportarCsv }) {
@@ -56,7 +59,7 @@ export class FeedbackView {
       this._distribuicaoDisplay.innerHTML = metricas.distribuicao
         .map((qtd, idx) => `
           <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.75rem;color:var(--text-muted);">
-            <span>${idx + 1}★</span>
+            <span style="display:inline-flex;align-items:center;gap:2px;">${idx + 1} ${Icons.svg('star', { size: 11, color: '#ffd700' })}</span>
             <div style="flex:1;height:5px;background:rgba(255,255,255,0.08);border-radius:3px;overflow:hidden;">
               <div style="height:100%;width:${metricas.total ? (qtd / metricas.total * 100) : 0}%;background:var(--color-primary);"></div>
             </div>
@@ -72,7 +75,7 @@ export class FeedbackView {
     if (feedbacks.length === 0) {
       this._container.innerHTML = `
         <div class="glass-card" style="text-align:center;padding:3rem;color:var(--text-muted);">
-          <div style="font-size:2.5rem;margin-bottom:0.75rem;">📭</div>
+          <div style="margin-bottom:0.75rem;color:var(--text-dim);">${Icons.svg('mail', { size: 42 })}</div>
           <p>Nenhum feedback encontrado para os filtros selecionados.</p>
         </div>
       `;
@@ -81,7 +84,14 @@ export class FeedbackView {
 
     this._container.innerHTML = feedbacks.map(fb => {
       const tipoClass = fb.tipo === 'problema' ? 'badge-crit' : fb.tipo === 'elogio' ? 'badge-pos' : 'badge-info';
-      const estrelas = '★'.repeat(fb.nota) + '☆'.repeat(5 - fb.nota);
+      
+      let estrelasHtml = '';
+      for (let i = 1; i <= 5; i++) {
+        estrelasHtml += i <= fb.nota
+          ? Icons.svg('star', { size: 14, color: '#ffd700' })
+          : Icons.svg('starOutline', { size: 14, color: '#64748b' });
+      }
+
       const linkResposta = fb.gerarLinkResposta();
 
       return `
@@ -90,7 +100,7 @@ export class FeedbackView {
             <div style="display:flex;align-items:center;gap:0.65rem;">
               <span class="badge ${tipoClass}">${fb.tipo.toUpperCase()}</span>
               <span class="badge badge-neutral">${feedbackService.getNomeApp(fb.app)}</span>
-              <span style="color:#ffd700;font-size:0.95rem;letter-spacing:1px;">${estrelas}</span>
+              <span style="display:inline-flex;align-items:center;gap:2px;">${estrelasHtml}</span>
             </div>
             <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.8rem;color:var(--text-dim);">
               <span>${new Date(fb.criadoEm).toLocaleString('pt-BR')}</span>
@@ -110,16 +120,16 @@ export class FeedbackView {
             <div style="display:flex;align-items:center;gap:0.5rem;">
               ${linkResposta ? `
                 <a href="${linkResposta}" class="btn btn-secondary btn-sm" title="Responder por e-mail">
-                  ✉️ Responder
+                  ${Icons.svg('mail', { size: 14 })} Responder
                 </a>
               ` : ''}
 
               <button class="btn btn-secondary btn-sm toggle-lido-btn" data-id="${fb.id}" data-lido="${fb.lida}">
-                ${fb.lida ? 'Marcar Não Lido' : '✓ Marcar Lido'}
+                ${fb.lida ? 'Marcar Não Lido' : `${Icons.svg('check', { size: 14 })} Marcar Lido`}
               </button>
 
               <button class="btn btn-danger btn-sm excluir-fb-btn" data-id="${fb.id}" title="Excluir">
-                🗑️
+                ${Icons.svg('trash', { size: 14 })}
               </button>
             </div>
           </div>
