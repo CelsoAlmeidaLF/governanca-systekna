@@ -1,7 +1,10 @@
 /**
  * Systekna Governança — Layout Base em CSS Grid e Flexbox
- * Suporte Completo: Mobile (<640px), Tablet (641px-1024px), Monitores (1025px-1440px) e Telas Grandes / 4K (>1440px).
- * Sidebar Retrátil (Diminuir/Expandir) e Drawer Lateral para Mobile/Tablet com PWA.
+ * Adaptações Especializadas:
+ * 1. Mobile App Design (<= 768px): Inspirado no Sistema do Bar (Multi-CM), navegação fixa no rodapé (.mobile-tab-bar),
+ *    chips de métricas 2x2 compactos, modais como Bottom Sheets táteis.
+ * 2. Tablet App Design (769px a 1024px): Split Layout com Tablet Navigation Rail de 88px estilo iPadOS.
+ * 3. Desktop & Telas Grandes (> 1024px, 1440px, 4K): Sidebar retrátil (280px / 76px), grids executivos de alta densidade.
  */
 
 * {
@@ -23,7 +26,7 @@ body {
 }
 
 /* ====================================================
-   CONTAINER PRINCIPAL (CSS GRID MULTI-ESCALA)
+   CONTAINER PRINCIPAL (DESKTOP & MONITORES)
    ==================================================== */
 .app-container {
   display: grid;
@@ -124,7 +127,6 @@ body {
   color: var(--text-muted);
 }
 
-/* Botão de Toggle do Menu na Topbar */
 .menu-toggle-btn {
   display: inline-flex;
   align-items: center;
@@ -143,11 +145,10 @@ body {
   background: var(--glass-bg-hover);
   border-color: rgba(0, 210, 255, 0.4);
   color: #ffffff;
-  transform: translateY(-1px);
 }
 
 /* ====================================================
-   SIDEBAR LATERAL
+   SIDEBAR LATERAL (DESKTOP)
    ==================================================== */
 .sidebar {
   grid-area: sidebar;
@@ -164,7 +165,7 @@ body {
   z-index: 50;
   overflow-y: auto;
   overflow-x: hidden;
-  transition: width var(--transition-smooth), transform var(--transition-smooth);
+  transition: width var(--transition-smooth);
 }
 
 .brand-header {
@@ -306,30 +307,12 @@ body {
   overflow: hidden;
 }
 
-/* Backdrop translúcido para Drawer Mobile/Tablet */
 .sidebar-backdrop {
   display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(4, 8, 16, 0.75);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  z-index: 90;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--transition-fast);
-}
-
-.sidebar-backdrop.active {
-  opacity: 1;
-  pointer-events: auto;
 }
 
 /* ====================================================
-   CONTEÚDO PRINCIPAL (MAIN CONTENT)
+   CONTEÚDO PRINCIPAL
    ==================================================== */
 .main-content {
   grid-area: main;
@@ -339,7 +322,7 @@ body {
   margin: 0 auto;
 }
 
-/* Grid de Métricas Adaptativo */
+/* Grid de Métricas Executivas */
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -347,7 +330,6 @@ body {
   margin-bottom: 2rem;
 }
 
-/* Seção de Conteúdo */
 .content-section {
   display: none;
   animation: fadeInTab 0.25s ease-out forwards;
@@ -357,7 +339,6 @@ body {
   display: block;
 }
 
-/* Wrapper de Tabelas com Scroll Suave */
 .table-responsive {
   width: 100%;
   overflow-x: auto;
@@ -369,25 +350,329 @@ body {
 .table-responsive::-webkit-scrollbar {
   height: 6px;
 }
-
-.table-responsive::-webkit-scrollbar-track {
-  background: rgba(10, 16, 30, 0.5);
-}
-
 .table-responsive::-webkit-scrollbar-thumb {
   background: rgba(0, 210, 255, 0.3);
   border-radius: 3px;
 }
 
-.table-responsive::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 210, 255, 0.6);
+.mobile-tab-bar {
+  display: none;
+}
+.bottom-sheet-handle {
+  display: none;
 }
 
 /* ====================================================
-   RESPONSIVIDADE MULTI-DISPOSITIVO
+   1. TABLET APP DESIGN (769px a 1024px)
+   Estilo iPadOS / Android Tablet com Navigation Rail de 88px
    ==================================================== */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .app-container {
+    grid-template-columns: 88px 1fr;
+    grid-template-rows: 64px 1fr;
+  }
 
-/* TELAS GRANDES & 4K (> 1440px / 2160px) */
+  .sidebar {
+    width: 88px;
+    padding: 1.2rem 0.5rem;
+    align-items: center;
+  }
+
+  .brand-header {
+    justify-content: center;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .brand-title,
+  .brand-subtitle,
+  .nav-item-text,
+  .nav-badge,
+  .sidebar-header-actions,
+  .user-details {
+    display: none !important;
+  }
+
+  .nav-item button {
+    flex-direction: column;
+    justify-content: center;
+    padding: 0.85rem 0.4rem;
+    border-radius: var(--border-radius-md);
+    gap: 0.25rem;
+  }
+
+  .nav-item-content {
+    gap: 0;
+  }
+
+  .nav-item button svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .sidebar-footer {
+    justify-content: center;
+    padding: 1rem 0;
+  }
+
+  .topbar {
+    padding: 0 1.5rem;
+    height: 64px;
+  }
+
+  .menu-toggle-btn {
+    display: none !important;
+  }
+
+  .main-content {
+    padding: 1.5rem 1.75rem;
+  }
+
+  /* Grid de Métricas para Tablet: 2x2 equilibrado ou 4 colunas */
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.1rem;
+  }
+
+  @media (min-width: 900px) {
+    .metrics-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  .mobile-tab-bar {
+    display: none !important;
+  }
+}
+
+/* ====================================================
+   2. MOBILE APP DESIGN (<= 768px)
+   Inspirado no Sistema do Bar (Multi-CM):
+   Navegação Fixa no Rodapé (.mobile-tab-bar),
+   Distribuição 2x2 de Métricas e Topbar de App Nativo
+   ==================================================== */
+@media (max-width: 768px) {
+  .app-container {
+    display: block !important;
+    min-height: 100vh;
+  }
+
+  /* Oculta totalmente o menu lateral desktop e botão hambúrguer no mobile */
+  .sidebar,
+  .sidebar-backdrop,
+  .menu-toggle-btn {
+    display: none !important;
+  }
+
+  /* Header Superior de App Mobile */
+  .topbar {
+    position: sticky;
+    top: 0;
+    height: calc(56px + env(safe-area-inset-top, 0px));
+    padding: env(safe-area-inset-top, 0px) 14px 0 14px;
+    background: rgba(7, 12, 24, 0.95);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .topbar-title-main {
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+
+  .topbar-title-sub,
+  .topbar-right .badge,
+  .topbar-right a.btn span {
+    display: none;
+  }
+
+  /* Espaçamento Seguro: Garante que o conteúdo role perfeitamente acima da barra inferior */
+  .main-content {
+    padding: 14px 12px calc(88px + env(safe-area-inset-bottom, 0px)) 12px !important;
+    max-width: 100%;
+  }
+
+  /* Grade 2x2 de Métricas no Mobile (Distribuição compacta de app) */
+  .metrics-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.65rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .stat-card {
+    padding: 0.75rem 0.85rem !important;
+    border-radius: 14px !important;
+    gap: 0.25rem !important;
+    min-height: 82px !important;
+    background: rgba(12, 20, 38, 0.7) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+
+  .stat-header {
+    font-size: 0.68rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.03em !important;
+    color: var(--text-muted) !important;
+  }
+
+  .stat-header svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+
+  .stat-value {
+    font-size: 1.45rem !important;
+    line-height: 1.1 !important;
+    color: #ffffff !important;
+  }
+
+  .stat-subtext {
+    font-size: 0.65rem !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    color: var(--text-dim) !important;
+  }
+
+  /* BARRA DE NAVEGAÇÃO INFERIOR NATIVA (RODAPÉ FIXO ESTILO MULTI-CM) */
+  .mobile-tab-bar {
+    display: flex !important;
+    position: fixed !important;
+    z-index: 99999 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: calc(62px + env(safe-area-inset-bottom, 0px)) !important;
+    padding: 6px 8px calc(8px + env(safe-area-inset-bottom, 0px)) 8px !important;
+    background: rgba(8, 14, 28, 0.96) !important;
+    backdrop-filter: blur(24px) saturate(190%) !important;
+    -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+    border-top: 1px solid rgba(0, 210, 255, 0.24) !important;
+    box-shadow: 0 -8px 28px rgba(0, 0, 0, 0.75) !important;
+    align-items: center !important;
+    justify-content: space-around !important;
+  }
+
+  .mobile-tab-item {
+    background: transparent !important;
+    border: 0 !important;
+    color: #8fa3bf !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 3px !important;
+    font-size: 10.5px !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.2px !important;
+    padding: 6px 4px !important;
+    flex: 1 1 0 !important;
+    max-width: 80px !important;
+    min-height: 50px !important;
+    border-radius: 12px !important;
+    transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    position: relative !important;
+    user-select: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    cursor: pointer !important;
+  }
+
+  .mobile-tab-item svg {
+    width: 22px !important;
+    height: 22px !important;
+    stroke-width: 2 !important;
+    transition: transform 0.18s ease !important;
+  }
+
+  .mobile-tab-item:active {
+    transform: scale(0.92) !important;
+  }
+
+  .mobile-tab-item.active {
+    color: #00d2ff !important;
+    background: rgba(0, 210, 255, 0.12) !important;
+    box-shadow: inset 0 0 0 1px rgba(0, 210, 255, 0.25) !important;
+  }
+
+  .mobile-tab-item.active::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 2px !important;
+    width: 22px !important;
+    height: 3px !important;
+    border-radius: 2px !important;
+    background: #00d2ff !important;
+    box-shadow: 0 0 8px #00d2ff !important;
+  }
+
+  .mobile-tab-icon-wrapper {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .mobile-tab-badge {
+    position: absolute !important;
+    top: -5px !important;
+    right: -10px !important;
+    background: #ff2a55 !important;
+    color: #ffffff !important;
+    font-size: 0.62rem !important;
+    font-weight: 700 !important;
+    border-radius: 10px !important;
+    padding: 1px 5px !important;
+    min-width: 16px !important;
+    text-align: center !important;
+    box-shadow: 0 0 6px rgba(255, 42, 85, 0.6) !important;
+  }
+
+  .mobile-tab-label {
+    font-size: 0.68rem !important;
+    font-weight: 600 !important;
+    margin-top: 2px !important;
+    letter-spacing: -0.01em !important;
+  }
+
+  /* Modais como Bottom Sheets no Mobile */
+  .modal-backdrop {
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+
+  .modal-window {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 20px 20px 0 0 !important;
+    max-height: 85vh !important;
+    padding: 1.25rem 1rem calc(1.5rem + env(safe-area-inset-bottom, 0px)) 1rem !important;
+    animation: slideUpBottomSheet 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  }
+
+  .bottom-sheet-handle {
+    width: 40px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.25);
+    margin: 0 auto 1rem auto;
+    display: block !important;
+  }
+
+  .auth-card {
+    padding: 1.5rem 1.25rem;
+    width: 95%;
+  }
+}
+
+/* ====================================================
+   3. TELAS GRANDES & 4K (> 1440px / 2160px)
+   ==================================================== */
 @media (min-width: 1440px) {
   .main-content {
     max-width: 1800px;
@@ -410,103 +695,5 @@ body {
   }
   .stat-value {
     font-size: 2.5rem;
-  }
-}
-
-/* TABLET & MONITORES MENORES (<= 1024px) */
-@media (max-width: 1024px) {
-  .app-container {
-    grid-template-columns: 1fr;
-    grid-template-rows: 64px 1fr;
-    grid-template-areas:
-      "topbar"
-      "main";
-  }
-
-  .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 290px;
-    max-width: 85vw;
-    height: 100vh;
-    z-index: 100;
-    transform: translateX(-100%);
-    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 0 40px rgba(0, 0, 0, 0.8);
-    background: rgba(8, 14, 28, 0.94);
-  }
-
-  .sidebar.open {
-    transform: translateX(0);
-  }
-
-  .sidebar-backdrop {
-    display: block;
-  }
-
-  .sidebar-close-btn {
-    display: inline-flex;
-  }
-
-  .sidebar-toggle-btn {
-    display: none;
-  }
-
-  .menu-toggle-btn {
-    display: inline-flex !important;
-  }
-
-  .main-content {
-    padding: 1.5rem;
-  }
-
-  .metrics-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-}
-
-/* MOBILE (< 768px) */
-@media (max-width: 768px) {
-  .topbar {
-    padding: 0 1rem;
-    height: 60px;
-  }
-
-  .topbar-title-sub {
-    display: none;
-  }
-
-  .topbar-right .btn span,
-  .topbar-right .badge {
-    display: none;
-  }
-
-  .main-content {
-    padding: 1rem 0.85rem;
-  }
-
-  .metrics-grid {
-    grid-template-columns: 1fr;
-    gap: 0.85rem;
-  }
-
-  .data-table th,
-  .data-table td {
-    padding: 0.75rem 0.65rem;
-    font-size: 0.82rem;
-  }
-
-  .auth-card {
-    padding: 1.5rem 1.25rem;
-    width: 95%;
-  }
-
-  .modal-dialog {
-    max-width: 95vw;
-    max-height: 90vh;
-    padding: 1.25rem;
   }
 }

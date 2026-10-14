@@ -151,29 +151,47 @@ export class GovernanceAppController {
 
   _setupTabNavigation() {
     const tabs = ['usuarios', 'erros', 'feedbacks', 'noticias'];
+    
+    // Navegação Desktop e Tablet
     tabs.forEach(tab => {
       const btn = document.getElementById(`nav-btn-${tab}`);
       if (btn) {
         btn.addEventListener('click', () => {
           this.switchTab(tab);
-          // Fecha o drawer em telas móveis ao trocar de aba
           if (window.innerWidth <= 1024) {
             this.fecharSidebarMobile();
           }
         });
       }
     });
+
+    // Navegação Nativa de App Mobile (Bottom Navigation)
+    const mobileTabButtons = document.querySelectorAll('.mobile-tab-item');
+    mobileTabButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.tab;
+        if (tab) {
+          this.switchTab(tab);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+    });
   }
 
   switchTab(tabName) {
     this._activeTab = tabName;
 
-    // Atualiza classes ativas na Sidebar
+    // Atualiza classes ativas na Sidebar (Desktop e Tablet)
     document.querySelectorAll('.nav-item').forEach(item => {
       item.classList.remove('active');
     });
     const activeNav = document.getElementById(`nav-item-${tabName}`);
     if (activeNav) activeNav.classList.add('active');
+
+    // Atualiza classes ativas na Bottom Navigation (Mobile App)
+    document.querySelectorAll('.mobile-tab-item').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.tab === tabName);
+    });
 
     // Atualiza seções ativas
     document.querySelectorAll('.content-section').forEach(sec => {
@@ -243,9 +261,11 @@ export class GovernanceAppController {
     const feedbacksFiltrados = this._feedbackService.filtrarFeedbacks(this._cache.feedbacks);
     this._feedbackView.renderLista(feedbacksFiltrados, this._feedbackService);
 
-    // Badges Sidebar
+    // Badges Sidebar & Mobile Bottom Navigation
     const badgeFb = document.getElementById('badge-count-feedbacks');
+    const mobileBadgeFb = document.getElementById('mobile-badge-feedbacks');
     if (badgeFb) badgeFb.textContent = metricasFb.novosNaoLidos || '0';
+    if (mobileBadgeFb) mobileBadgeFb.textContent = metricasFb.novosNaoLidos || '0';
 
     // 2. Erros
     const metricasErr = this._errorService.calcularMetricas(this._cache.erros);
@@ -254,7 +274,9 @@ export class GovernanceAppController {
     this._errorView.renderGrupos(gruposErr);
 
     const badgeErr = document.getElementById('badge-count-erros');
+    const mobileBadgeErr = document.getElementById('mobile-badge-erros');
     if (badgeErr) badgeErr.textContent = metricasErr.abertos || '0';
+    if (mobileBadgeErr) mobileBadgeErr.textContent = metricasErr.abertos || '0';
 
     // 3. Usuários
     const metricasUsr = this._userApprovalService.calcularMetricas(this._cache.solicitacoes, this._cache.tenants);
@@ -264,14 +286,18 @@ export class GovernanceAppController {
     this._userApprovalView.renderTenants(this._cache.tenants);
 
     const badgeUsr = document.getElementById('badge-count-usuarios');
+    const mobileBadgeUsr = document.getElementById('mobile-badge-usuarios');
     if (badgeUsr) badgeUsr.textContent = metricasUsr.pendentes || '0';
+    if (mobileBadgeUsr) mobileBadgeUsr.textContent = metricasUsr.pendentes || '0';
 
     // 4. Notícias
     const noticiasFiltradas = this._devNewsService.filtrarNoticias(this._cache.noticias);
     this._devNewsView.renderNoticias(noticiasFiltradas);
 
     const badgeNot = document.getElementById('badge-count-noticias');
+    const mobileBadgeNot = document.getElementById('mobile-badge-noticias');
     if (badgeNot) badgeNot.textContent = this._cache.noticias.length || '0';
+    if (mobileBadgeNot) mobileBadgeNot.textContent = this._cache.noticias.length || '0';
   }
 
   exportarCsvFeedbacks() {
