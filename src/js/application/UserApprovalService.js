@@ -74,10 +74,11 @@ export class UserApprovalService {
 
   async aprovarSolicitacao(solicitacao, { permiteMesas = true, plano = 'pro', aprovador = 'CEO / Engenharia Systekna', motivo = 'Homologado com sucesso' } = {}) {
     solicitacao.aprovar({ aprovador, permiteMesas, motivo });
-    await this._port.atualizarStatusSolicitacao(solicitacao.id, solicitacao.toJSON());
 
-    // Cria ou sincroniza o registro do tenant
+    // A licença é gravada ANTES da decisão: se a segunda escrita falhar, o app vê a solicitação
+    // ainda pendente (nunca "aprovado sem licença", que impediria o kill-switch)
     const tenant = new TenantPermission({
+      id: solicitacao.id,
       usuario: solicitacao.usuario,
       nomeComercio: solicitacao.nomeEstabelecimento || solicitacao.usuario,
       cnpj: solicitacao.cnpj,
@@ -100,6 +101,7 @@ export class UserApprovalService {
     });
 
     await this._port.salvarTenant(tenant.toJSON());
+    await this._port.atualizarStatusSolicitacao(solicitacao.id, solicitacao.toJSON());
     return { solicitacao, tenant };
   }
 
@@ -108,8 +110,8 @@ export class UserApprovalService {
     return await this._port.atualizarStatusSolicitacao(solicitacao.id, solicitacao.toJSON());
   }
 
-  async alternarKillSwitch(usuario, bloquear, motivo = 'Suspensão de Governança Systekna') {
-    return await this._port.alternarKillSwitch(usuario, bloquear, motivo);
+  async alternarKillSwitch(tenantId, bloquear, motivo = 'Suspensão de Governança Systekna') {
+    return await this._port.alternarKillSwitch(tenantId, bloquear, motivo);
   }
 
   async atualizarModulosTenant(tenant, novosModulos = {}) {

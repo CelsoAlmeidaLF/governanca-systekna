@@ -5,6 +5,7 @@
  */
 export class TenantPermission {
   constructor({
+    id = '',
     usuario = '',
     nomeComercio = '',
     cnpj = null,
@@ -15,6 +16,9 @@ export class TenantPermission {
     metricasCompliance = {}
   } = {}) {
     this.usuario = String(usuario).trim();
+    // Chave do documento em tenants_governanca = id da solicitação de origem (UUID não adivinhável).
+    // Tenants legados sem id usam o próprio usuário como chave.
+    this.id = String(id || this.usuario).trim();
     this.nomeComercio = String(nomeComercio || '').trim();
     this.cnpj = cnpj;
     this.tipoComercio = tipoComercio;
@@ -88,6 +92,7 @@ export class TenantPermission {
 
   toJSON() {
     return {
+      id: this.id,
       usuario: this.usuario,
       nomeComercio: this.nomeComercio,
       cnpj: this.cnpj,

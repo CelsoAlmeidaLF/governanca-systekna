@@ -1,38 +1,77 @@
-# Workflow para Deploy Estático no GitHub Pages
-name: Deploy static content to Pages
+# Workflow: testes automatizados + deploy estático no GitHub Pages
+name: Test and deploy to Pages
 
 on:
   push:
+    branches: ["main"]
+  pull_request:
     branches: ["main"]
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: "pages"
+  group: "pages-${{ github.ref }}"
   cancel-in-progress: false
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Rodar testes
+        run: npm test
+
+  # Regras do Firestore validadas no emulador (Java já vem no runner ubuntu-latest)
+  rules:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar ferramentas do emulador
+        run: npm install --no-audit --no-fund
+
+      - name: Testar firestore.rules
+        run: npm run test:rules
+
+  # O deploy só acontece em push na main e somente se os testes passarem
   deploy:
+    needs: [test, rules]
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repositório
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configurar GitHub Pages
+      - name: Setup Pages
         uses: actions/configure-pages@v5
 
-      - name: Carregar Artefatos da pasta src
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: './src'
 
-      - name: Deploy para GitHub Pages
+      - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@v4
