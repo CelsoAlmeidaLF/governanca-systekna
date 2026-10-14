@@ -65,6 +65,8 @@
     return input;
   }
   const wasTyped = input => input.value === input._typed;
+  // Apps com senhas/PIN próprios (ex.: equipe do BarGestão) usam a mesma proteção nos seus campos.
+  window.FinancTyped = Object.freeze({ only: typedOnly, wasTyped });
   const panel = document.createElement('section'); panel.id = 'vaultGate';
   panel.setAttribute('aria-labelledby', 'vaultTitle');
   panel.innerHTML = '<div class="vault-brand"><img class="vault-logo" alt="" width="40" height="40" hidden><div><div class="vault-app-name"></div><div class="vault-eyebrow">' + icon('shield-check', 12) + 'SEGURANÇA LOCAL</div></div></div>'
