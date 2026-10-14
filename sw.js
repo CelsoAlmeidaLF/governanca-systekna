@@ -1,6 +1,6 @@
 /* Governança Systekna · service worker (mesmo modelo do painel de feedback e do Finanças da Casa).
    Troque CACHE_NAME a cada versão (igual ao data-vault-version do index.html); o teste pwa confere. */
-const CACHE_NAME = 'governanca-systekna-v1.3.0';
+const CACHE_NAME = 'governanca-systekna-v1.3.1';
 const APP_SHELL = [
   './', './index.html', './manifest.json', './stk-pkg-bip39-pt.js', './stk-pkg-financ-icons.js', './stk-pkg-secure-ui.css',
   './stk-pkg-secure-ui.js', './stk-pkg-secure-vault.js', './css/aero.css', './fonts/fonts.css', './fonts/open-sans.woff2',
