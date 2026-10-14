@@ -1,10 +1,11 @@
 /**
  * Service Worker: Governança Systekna (PWA)
- * Versão do Cache: v1.0.5
- * Suporte a execução offline, instalação em dispositivo móvel (Android/iOS) e desktop.
+ * Versão do Cache: v1.0.6
+ * Estratégia: Network-First para navegação HTML (garantindo interface sempre fresca)
+ * e Stale-While-Revalidate para assets estáticos com fallback offline.
  */
 
-const CACHE_NAME = 'systekna-governanca-v1.0.5';
+const CACHE_NAME = 'systekna-governanca-v1.0.6';
 
 const STATIC_ASSETS = [
   './',
@@ -26,7 +27,7 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(STATIC_ASSETS).catch((err) => {
-        console.warn('[SW] Falha ao pré-carregar alguns assets estáticos:', err);
+        console.warn('[SW] Falha ao pré-carregar alguns assets:', err);
       });
     }).then(() => self.skipWaiting())
   );
@@ -50,7 +51,7 @@ self.addEventListener('fetch', (event) => {
   const request = event.request;
   const url = new URL(request.url);
 
-  // Não interceptar requisições ao Firebase, Firestore, Google Auth ou GitHub
+  // Não interceptar requisições ao Firebase, Firestore, Google APIs ou GitHub
   if (
     url.hostname.includes('firebase') ||
     url.hostname.includes('googleapis') ||
@@ -65,16 +66,30 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Estratégia Stale-While-Revalidate para o App Shell
+  // 1. Navegação HTML (Page Load): NETWORK-FIRST para nunca prender o usuário em cache antigo
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(request).then((cached) => cached || caches.match('./index.html')))
+    );
+    return;
+  }
+
+  // 2. Assets estáticos: Stale-While-Revalidate
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
       const fetchPromise = fetch(request)
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
-            const responseClone = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(request, responseClone);
-            });
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
           }
           return networkResponse;
         })
