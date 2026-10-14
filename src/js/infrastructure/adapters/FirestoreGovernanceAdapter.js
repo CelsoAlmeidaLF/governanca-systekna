@@ -1,3 +1,5 @@
+import { COLECOES } from '../../../stk-pkg-governanca/stk-pkg-governanca-contrato.js';
+
 // Teto por listagem: coleções de criação pública podem crescer por abuso; o painel mostra os mais recentes
 export const LIMITE_LISTAGEM = 300;
 
@@ -63,7 +65,7 @@ export class FirestoreGovernanceAdapter {
    */
   async conferirAcesso() {
     const fs = await this._fsApi();
-    await fs.getDocsFromServer(fs.query(fs.collection(this._db, 'solicitacoes_governanca'), fs.limit(1)));
+    await fs.getDocsFromServer(fs.query(fs.collection(this._db, COLECOES.SOLICITACOES), fs.limit(1)));
   }
 
   static _iso(valor) {
@@ -75,7 +77,7 @@ export class FirestoreGovernanceAdapter {
   // FEEDBACKS
   // ==========================================
   async listarFeedbacks() {
-    const docs = await this._listar('feedbacks_usuarios', 'enviadoEm');
+    const docs = await this._listar(COLECOES.FEEDBACKS, 'enviadoEm');
     return docs.map(({ id, data: d }) => ({
       id,
       app: d.app || 'BARGESTAO',
@@ -94,14 +96,14 @@ export class FirestoreGovernanceAdapter {
 
   async marcarComoLido(id, lido = true) {
     await this._escrever('atualizar o feedback', (fs) =>
-      fs.updateDoc(fs.doc(this._db, 'feedbacks_usuarios', id), { lida: Boolean(lido), status: lido ? 'lido' : 'novo' })
+      fs.updateDoc(fs.doc(this._db, COLECOES.FEEDBACKS, id), { lida: Boolean(lido), status: lido ? 'lido' : 'novo' })
     );
     return true;
   }
 
   async excluirFeedback(id) {
     await this._escrever('excluir o feedback', (fs) =>
-      fs.deleteDoc(fs.doc(this._db, 'feedbacks_usuarios', id))
+      fs.deleteDoc(fs.doc(this._db, COLECOES.FEEDBACKS, id))
     );
     return true;
   }
@@ -110,7 +112,7 @@ export class FirestoreGovernanceAdapter {
   // ERROS / TELEMETRIA
   // ==========================================
   async listarErros() {
-    const docs = await this._listar('telemetria_erros', 'dataOcorrencia');
+    const docs = await this._listar(COLECOES.ERROS, 'dataOcorrencia');
     return docs.map(({ id, data: d }) => ({
       id,
       app: d.app || 'BARGESTAO',
@@ -130,14 +132,14 @@ export class FirestoreGovernanceAdapter {
 
   async marcarResolvido(id, resolvido = true) {
     await this._escrever('atualizar o status do erro', (fs) =>
-      fs.updateDoc(fs.doc(this._db, 'telemetria_erros', id), { resolvido: Boolean(resolvido) })
+      fs.updateDoc(fs.doc(this._db, COLECOES.ERROS, id), { resolvido: Boolean(resolvido) })
     );
     return true;
   }
 
   async excluirErro(id) {
     await this._escrever('excluir o registro de erro', (fs) =>
-      fs.deleteDoc(fs.doc(this._db, 'telemetria_erros', id))
+      fs.deleteDoc(fs.doc(this._db, COLECOES.ERROS, id))
     );
     return true;
   }
@@ -146,7 +148,7 @@ export class FirestoreGovernanceAdapter {
   // SOLICITAÇÕES DE GOVERNANÇA & TENANTS
   // ==========================================
   async listarSolicitacoes() {
-    const docs = await this._listar('solicitacoes_governanca', 'solicitadoEm');
+    const docs = await this._listar(COLECOES.SOLICITACOES, 'solicitadoEm');
     return docs.map(({ id, data: d }) => ({
       ...d,
       id,
@@ -159,13 +161,13 @@ export class FirestoreGovernanceAdapter {
     // O id é a chave do documento; não é regravado como campo
     const { id: _ignorado, ...dados } = dadosDecisao || {};
     await this._escrever('registrar a decisão da solicitação', (fs) =>
-      fs.setDoc(fs.doc(this._db, 'solicitacoes_governanca', id), dados, { merge: true })
+      fs.setDoc(fs.doc(this._db, COLECOES.SOLICITACOES, id), dados, { merge: true })
     );
     return true;
   }
 
   async listarTenants() {
-    const docs = await this._listar('tenants_governanca');
+    const docs = await this._listar(COLECOES.TENANTS);
     return docs.map(({ id, data: d }) => ({ ...d, id }));
   }
 
@@ -173,7 +175,7 @@ export class FirestoreGovernanceAdapter {
     const { id, ...dados } = tenantData || {};
     if (!id) throw new Error('Tenant sem identificador; não é possível salvar.');
     await this._escrever('salvar o tenant', (fs) =>
-      fs.setDoc(fs.doc(this._db, 'tenants_governanca', id), dados, { merge: true })
+      fs.setDoc(fs.doc(this._db, COLECOES.TENANTS, id), dados, { merge: true })
     );
     return true;
   }
@@ -181,7 +183,7 @@ export class FirestoreGovernanceAdapter {
   async alternarKillSwitch(tenantId, bloquear, motivo = 'Suspensão de Governança Systekna') {
     await this._escrever(bloquear ? 'ativar o kill-switch' : 'desbloquear o terminal', (fs) =>
       // setDoc com merge: funciona mesmo se o tenant ainda não existir (o bloqueio nunca falha por NOT_FOUND)
-      fs.setDoc(fs.doc(this._db, 'tenants_governanca', tenantId), {
+      fs.setDoc(fs.doc(this._db, COLECOES.TENANTS, tenantId), {
         licenca: {
           bloqueioRemoto: Boolean(bloquear),
           status: bloquear ? 'bloqueado' : 'ativo',

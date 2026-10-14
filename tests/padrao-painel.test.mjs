@@ -83,6 +83,27 @@ test('kit: cópias idênticas às de PACOTES/stk-pkg-security (não editar aqui)
   }
 });
 
+const PKG_GOVERNANCA = ['stk-pkg-governanca-contrato.js', 'stk-pkg-governanca-config.js', 'stk-pkg-governanca-cliente.js', 'stk-pkg-governanca-firestore.js'];
+
+test('pkg-governanca: cópias idênticas às de PACOTES/stk-pkg-governanca (não editar aqui)', (t) => {
+  const pacote = new URL('../../PACOTES/stk-pkg-governanca/', raiz);
+  if (!existsSync(pacote)) { t.skip('PACOTES fora deste clone'); return; }
+  for (const f of PKG_GOVERNANCA) {
+    assert.equal(hash(ler('src/stk-pkg-governanca/' + f)), hash(readFileSync(new URL(f, pacote), 'utf8')), f);
+  }
+  assert.equal(hash(ler('tests/stk-pkg-governanca.test.mjs')), hash(readFileSync(new URL('test/governanca.test.mjs', pacote), 'utf8')), 'teste do pacote');
+});
+
+test('pkg-governanca: o painel usa o contrato (planos, UID e coleções) e o service worker guarda o pacote', () => {
+  assert.match(ler('src/js/domain/entities/TenantPermission.js'), /PLANOS\[plano\]/);
+  assert.match(ler('src/js/application/UserApprovalService.js'), /modulosDoPlano\(plano/);
+  assert.match(ler('src/js/ui/utils/formatarUid.js'), /stk-pkg-governanca-contrato\.js/);
+  const adapter = ler('src/js/infrastructure/adapters/FirestoreGovernanceAdapter.js');
+  assert.doesNotMatch(adapter, /'(solicitacoes_governanca|tenants_governanca|telemetria_erros|feedbacks_usuarios)'/);
+  const sw = ler('src/sw.js');
+  for (const f of PKG_GOVERNANCA) assert.ok(sw.includes(`'./stk-pkg-governanca/${f}'`), f);
+});
+
 test('regras: firestore.rules é cópia idêntica da fonte única em PACOTES/stk-pkg-doacao', (t) => {
   const rules = ler('firestore.rules');
   assert.match(rules, /function gestor\(\)/);
