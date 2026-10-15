@@ -47,7 +47,7 @@ Antes da v1.2.0 havia dois arquivos de regras para o mesmo projeto; publicar um 
 ## Endereços
 
 - **GitHub Pages (DEV):** https://celsoalmeidalf.github.io/governanca-systekna/ — publicado pelo workflow a cada push na `main`, depois dos testes.
-- **Firebase Hosting (recomendado; instalar no Android por aqui):** https://systekna-governanca.web.app — site `systekna-governanca` no projeto `systekna-feedback`, no ar desde 15/10/2026 (v1.4.0, login conferido). Endereço só da Governança (não divide o armazenamento do navegador com os outros apps) e com os cabeçalhos de segurança do `firebase.json` (sem iframe, HSTS, `nosniff`, `no-referrer`), que o GitHub Pages não envia. O domínio está na chave reCAPTCHA do App Check.
+- **Firebase Hosting (recomendado; instalar no Android por aqui):** https://systekna-governanca.web.app — site `systekna-governanca` no projeto `systekna-feedback`, no ar desde 15/10/2026 (v1.4.1 desde 15/10, login conferido). Endereço só da Governança (não divide o armazenamento do navegador com os outros apps) e com os cabeçalhos de segurança do `firebase.json` (sem iframe, HSTS, `nosniff`, `no-referrer`), que o GitHub Pages não envia. O domínio está na chave reCAPTCHA do App Check.
   - **Publicação manual:** o workflow só publica no Pages. A cada versão mesclada na `main`, rode `npm run deploy:hosting` a partir da `main` atualizada.
   - Custo: plano gratuito (Spark, sem cobrança ativada). A chave reCAPTCHA é compartilhada com os outros apps e o limite gratuito (10.000 verificações/mês) é somado entre todos.
 - Cada endereço tem o próprio cofre: o PIN é criado de novo e o login é feito uma vez.
@@ -56,7 +56,7 @@ Antes da v1.2.0 havia dois arquivos de regras para o mesmo projeto; publicar um 
 
 No Android, abra **https://systekna-governanca.web.app** no Chrome, entre e use o menu → **Instalar app**.
 
-PWA no modelo do painel: `manifest.json`, ícones com `?v=2` e `sw.js` registrado pelo kit, buscando **primeiro na rede** (versão nova vale na hora; sem internet, a tela abre do cache; Firebase e Google nunca passam pelo cache).
+PWA no modelo do painel: `manifest.json`, ícones com `?v=3` e `sw.js` registrado pelo kit, buscando **primeiro na rede** (versão nova vale na hora; sem internet, a tela abre do cache; Firebase e Google nunca passam pelo cache).
 
 Ao mudar arquivos do app, troque `data-vault-version` no `index.html` e `CACHE_NAME` no `sw.js`; arquivo novo precisa entrar no `APP_SHELL` (o teste `pwa` confere os três).
 
@@ -70,6 +70,7 @@ Ao mudar arquivos do app, troque `data-vault-version` no `index.html` e `CACHE_N
 | 1.3.0 | Impressão digital (UID) do BarGestão no painel; regras aceitam o UID de 32 hex além do UUID; erros e feedbacks guardam o `uid` |
 | 1.3.1 | Sem versão mínima inventada (9.3.0): política de versão só quando definida |
 | 1.4.0 | Permissão pelo `stk-pkg-governanca`: tabela única de planos (corrige Enterprise gravado como 1000/10 ao aprovar), UID legado (UUID), coleções do contrato, kit com `FinancTyped` |
+| 1.4.1 | Ícones novos do PWA (escudo com controles e selo), tamanhos 72–384 no manifest, ícones `?v=3`; no ar no Pages e no Firebase Hosting (15/10/2026) |
 
 ## Estrutura
 
