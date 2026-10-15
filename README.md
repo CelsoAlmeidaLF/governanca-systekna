@@ -47,10 +47,14 @@ Antes da v1.2.0 havia dois arquivos de regras para o mesmo projeto; publicar um 
 ## Endereços
 
 - **GitHub Pages (DEV):** https://celsoalmeidalf.github.io/governanca-systekna/ — publicado pelo workflow a cada push na `main`, depois dos testes.
-- **Firebase Hosting (para instalar no Android):** site `systekna-governanca` em `firebase.json`, com os mesmos cabeçalhos de segurança do painel. O site ainda precisa ser criado (`npx -y firebase-tools hosting:sites:create systekna-governanca --project systekna-feedback`) e o domínio `systekna-governanca.web.app` incluído na chave reCAPTCHA; depois, `npm run deploy:hosting`.
+- **Firebase Hosting (recomendado; instalar no Android por aqui):** https://systekna-governanca.web.app — site `systekna-governanca` no projeto `systekna-feedback`, no ar desde 15/10/2026 (v1.4.0, login conferido). Endereço só da Governança (não divide o armazenamento do navegador com os outros apps) e com os cabeçalhos de segurança do `firebase.json` (sem iframe, HSTS, `nosniff`, `no-referrer`), que o GitHub Pages não envia. O domínio está na chave reCAPTCHA do App Check.
+  - **Publicação manual:** o workflow só publica no Pages. A cada versão mesclada na `main`, rode `npm run deploy:hosting` a partir da `main` atualizada.
+  - Custo: plano gratuito (Spark, sem cobrança ativada). A chave reCAPTCHA é compartilhada com os outros apps e o limite gratuito (10.000 verificações/mês) é somado entre todos.
 - Cada endereço tem o próprio cofre: o PIN é criado de novo e o login é feito uma vez.
 
 ## Instalar no celular
+
+No Android, abra **https://systekna-governanca.web.app** no Chrome, entre e use o menu → **Instalar app**.
 
 PWA no modelo do painel: `manifest.json`, ícones com `?v=2` e `sw.js` registrado pelo kit, buscando **primeiro na rede** (versão nova vale na hora; sem internet, a tela abre do cache; Firebase e Google nunca passam pelo cache).
 
