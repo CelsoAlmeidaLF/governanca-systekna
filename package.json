@@ -1,6 +1,6 @@
 {
   "name": "governanca-systekna",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Painel de Governança Systekna (Aero 3.0, cofre PIN/biometria): aprovação de estabelecimentos, licenças, erros, feedbacks e comunicados aos devs",
   "type": "module",
   "scripts": {

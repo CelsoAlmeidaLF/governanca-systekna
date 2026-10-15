@@ -1,6 +1,6 @@
 /* Governança Systekna · service worker (mesmo modelo do painel de feedback e do Finanças da Casa).
    Troque CACHE_NAME a cada versão (igual ao data-vault-version do index.html); o teste pwa confere. */
-const CACHE_NAME = 'governanca-systekna-v1.4.0';
+const CACHE_NAME = 'governanca-systekna-v1.4.1';
 const APP_SHELL = [
   './', './index.html', './manifest.json', './stk-pkg-bip39-pt.js', './stk-pkg-financ-icons.js', './stk-pkg-secure-ui.css',
   './stk-pkg-secure-ui.js', './stk-pkg-secure-vault.js', './css/aero.css', './fonts/fonts.css', './fonts/open-sans.woff2',
@@ -18,8 +18,9 @@ const APP_SHELL = [
   './js/ui/utils/dialogo.js', './js/ui/utils/escapeHtml.js', './js/ui/utils/formatarUid.js', './js/ui/utils/modo.js', './js/ui/utils/notificar.js',
   './js/ui/utils/seletor.js', './js/ui/views/AuthView.js', './js/ui/views/DevNewsView.js', './js/ui/views/ErrorManagementView.js',
   './js/ui/views/FeedbackView.js', './js/ui/views/UserApprovalView.js',
-  './icon-192.png?v=2', './icon-512.png?v=2', './icon-maskable-192.png?v=2', './icon-maskable-512.png?v=2',
-  './apple-touch-icon.png?v=2', './favicon.ico?v=2', './favicon-16.png?v=2', './favicon-32.png?v=2', './favicon-48.png?v=2'
+  './icon-192.png?v=3', './icon-512.png?v=3', './icon-maskable-192.png?v=3', './icon-maskable-512.png?v=3',
+  './apple-touch-icon.png?v=3', './favicon.ico?v=3', './favicon-16.png?v=3', './favicon-32.png?v=3', './favicon-48.png?v=3',
+  './icon-72.png?v=3', './icon-96.png?v=3', './icon-128.png?v=3', './icon-144.png?v=3', './icon-152.png?v=3', './icon-384.png?v=3'
 ];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => Promise.allSettled(APP_SHELL.map(url => cache.add(url)))));
