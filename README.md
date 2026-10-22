@@ -7,7 +7,7 @@ Segue o mesmo padrão do painel de feedback (`PESSOAL/stk-app-feedback-painel`):
 [![Test and deploy to Pages](https://github.com/CelsoAlmeidaLF/governanca-systekna/actions/workflows/static.yml/badge.svg)](https://github.com/CelsoAlmeidaLF/governanca-systekna/actions/workflows/static.yml)
 
 - Dados: Firestore do projeto `systekna-feedback`. As regras são as **mesmas** do painel de feedback (ver [Regras do Firestore](#regras-do-firestore)).
-- Permissão pelo pacote `PACOTES/stk-pkg-governanca` (v1.4.0): planos, formato do UID e nomes das coleções vêm do mesmo contrato que o BarGestão usa. Solicitações, licenças, erros e feedbacks mostram a impressão digital (UID) no formato do app (`3F2A-9C01-…`).
+- Permissão pelo pacote `2. PACOTES/stk-pkt-governanca` (v1.4.0): planos, formato do UID e nomes das coleções vêm do mesmo contrato que o BarGestão usa. Solicitações, licenças, erros e feedbacks mostram a impressão digital (UID) no formato do app (`3F2A-9C01-…`).
 - Quatro seções: **Licenças** (solicitações e licenças ativas), **Erros** (telemetria agrupada pelo mesmo erro, com Issue no GitHub), **Feedbacks** (média, distribuição, filtros, CSV) e **Comunicados**.
 - Escritas só aparecem como feitas depois que o servidor confirma; falhas aparecem para o operador.
 - Segurança: CSP no padrão dos apps, `noindex`, sem iframe (kit), texto vindo dos apps sempre escapado (`escapeHtml`), nada de `alert`/`confirm`/`prompt`.
@@ -24,7 +24,7 @@ Base idêntica ao `painel.css` do painel de feedback (o teste confere os tokens)
 
 ## Cofre, PIN e biometria (v1.2.0)
 
-O painel abre pelo kit de segurança (`PACOTES/stk-pkg-security`), como os apps e o painel de feedback:
+O painel abre pelo kit de segurança (`2. PACOTES/stk-pkt-security`), como os apps e o painel de feedback:
 
 - **Abrir:** PIN FINANC (o mesmo dos apps no mesmo endereço) ou biometria. Sem desbloquear, nada aparece.
 - **Entrar sozinho:** no primeiro login, com "Guardar e-mail e senha neste aparelho" marcado, a conta vai para o cofre (`secureStorage`, chave `governanca:conta`), cifrada com AES-GCM. Nos próximos desbloqueios o painel entra no Firebase sem digitar nada.
@@ -35,10 +35,10 @@ O painel abre pelo kit de segurança (`PACOTES/stk-pkg-security`), como os apps 
 
 ## Regras do Firestore
 
-O projeto `systekna-feedback` tem **um só** arquivo de regras: `PACOTES/stk-pkg-doacao/firestore.rules`. Ele traz as coleções do painel de feedback (`avaliacoes`, `sugestoes`, `erros`) e as do Governança (`feedbacks_usuarios`, `telemetria_erros`, `solicitacoes_governanca`, `tenants_governanca`, `noticias_devs`).
+O projeto `systekna-feedback` tem **um só** arquivo de regras: `2. PACOTES/stk-pkt-doacao/firestore.rules`. Ele traz as coleções do painel de feedback (`avaliacoes`, `sugestoes`, `erros`) e as do Governança (`feedbacks_usuarios`, `telemetria_erros`, `solicitacoes_governanca`, `tenants_governanca`, `noticias_devs`).
 
 - `firestore.rules` neste repositório é **cópia idêntica** (o teste `padrao-painel` confere). Não edite aqui: edite em PACOTES e copie.
-- Publicar só de lá: `cd PACOTES/stk-pkg-doacao && npx -y firebase-tools deploy --only firestore --project systekna-feedback`.
+- Publicar só de lá: `cd "2. PACOTES/stk-pkt-doacao" && npx -y firebase-tools deploy --only firestore --project systekna-feedback`.
 - Testar no emulador (requer Java): `npm install && npm run test:rules` (49 casos, incluindo os do painel de feedback).
 - Conta extra com acesso (opcional): `node scripts/set-admin-claim.mjs email@exemplo.com` com uma service account fora do repositório.
 
@@ -78,8 +78,8 @@ Ao mudar arquivos do app, troque `data-vault-version` no `index.html` e `CACHE_N
 src/index.html                 telas Entrar e Painel, janelas (conta, senha, confirmar, comunicado)
 src/css/aero.css               design Aero 3.0 (base do painel de feedback + bloco "Governança")
 src/fonts/                     Open Sans variável + licença OFL
-src/stk-pkg-*                  kit de segurança e ícones (cópias de PACOTES/stk-pkg-security; não editar aqui)
-src/stk-pkg-governanca/        contrato, cliente, Firestore e config (cópias de PACOTES/stk-pkg-governanca; não editar aqui)
+src/stk-pkg-*                  kit de segurança e ícones (cópias de 2. PACOTES/stk-pkt-security; não editar aqui)
+src/stk-pkg-governanca/        contrato, cliente, Firestore e config (cópias de 2. PACOTES/stk-pkt-governanca; não editar aqui)
 src/js/domain/                 entidades, portas e ContaCofre (regras puras da conta guardada no cofre)
 src/js/application/            serviços (auth, feedback, erros, aprovação, comunicados)
 src/js/infrastructure/         FirebaseApp (App Check + Auth na memória + Firestore) e adaptadores
