@@ -6,6 +6,17 @@ import { createHash } from 'node:crypto';
 
 const raiz = new URL('../', import.meta.url);
 const ler = (f) => readFileSync(new URL(f, raiz), 'utf8');
+// Pasta de um pacote no FINANC (URL com barra final). Aceita "PACOTES" ou "2. PACOTES" e "stk-pkg-*" ou "stk-pkt-*"
+// (renomeados em 22/10/2026). null = fora do FINANC (clone só deste repositório).
+function achaPacote(nome) {
+  const financ = new URL('../../', raiz);
+  if (!existsSync(financ)) return null;
+  const pacotes = readdirSync(financ).find((d) => /^(\d+\.\s*)?PACOTES$/.test(d));
+  if (!pacotes) return null;
+  const base = new URL(encodeURIComponent(pacotes) + '/', financ);
+  const pasta = readdirSync(base).find((d) => d === `stk-pkg-${nome}` || d === `stk-pkt-${nome}`);
+  return pasta ? new URL(encodeURIComponent(pasta) + '/', base) : null;
+}
 const html = ler('src/index.html');
 const main = ler('src/js/main.js');
 const fbApp = ler('src/js/infrastructure/config/FirebaseApp.js');
@@ -76,8 +87,8 @@ test('design: Aero 3.0 com a mesma base do painel de feedback', () => {
 });
 
 test('kit: cópias idênticas às de PACOTES/stk-pkg-security (não editar aqui)', (t) => {
-  const pacote = new URL('../../PACOTES/stk-pkg-security/', raiz);
-  if (!existsSync(pacote)) { t.skip('PACOTES fora deste clone'); return; }
+  const pacote = achaPacote('security');
+  if (!pacote) { t.skip('PACOTES fora deste clone'); return; }
   for (const f of ['stk-pkg-financ-icons.js', 'stk-pkg-bip39-pt.js', 'stk-pkg-secure-vault.js', 'stk-pkg-secure-ui.js', 'stk-pkg-secure-ui.css']) {
     assert.equal(hash(ler('src/' + f)), hash(readFileSync(new URL(f, pacote), 'utf8')), f);
   }
@@ -86,8 +97,8 @@ test('kit: cópias idênticas às de PACOTES/stk-pkg-security (não editar aqui)
 const PKG_GOVERNANCA = ['stk-pkg-governanca-contrato.js', 'stk-pkg-governanca-config.js', 'stk-pkg-governanca-cliente.js', 'stk-pkg-governanca-firestore.js'];
 
 test('pkg-governanca: cópias idênticas às de PACOTES/stk-pkg-governanca (não editar aqui)', (t) => {
-  const pacote = new URL('../../PACOTES/stk-pkg-governanca/', raiz);
-  if (!existsSync(pacote)) { t.skip('PACOTES fora deste clone'); return; }
+  const pacote = achaPacote('governanca');
+  if (!pacote) { t.skip('PACOTES fora deste clone'); return; }
   for (const f of PKG_GOVERNANCA) {
     assert.equal(hash(ler('src/stk-pkg-governanca/' + f)), hash(readFileSync(new URL(f, pacote), 'utf8')), f);
   }
@@ -109,8 +120,9 @@ test('regras: firestore.rules é cópia idêntica da fonte única em PACOTES/stk
   assert.match(rules, /function gestor\(\)/);
   assert.match(rules, /match \/sugestoes\/\{id\}/, 'mesmo arquivo do painel de feedback: um deploy não apaga o outro');
   assert.match(rules, /match \/solicitacoes_governanca\/\{id\}/);
-  const fonte = new URL('../../PACOTES/stk-pkg-doacao/firestore.rules', raiz);
-  if (!existsSync(fonte)) { t.skip('PACOTES fora deste clone'); return; }
+  const doacao = achaPacote('doacao');
+  const fonte = doacao && new URL('firestore.rules', doacao);
+  if (!fonte || !existsSync(fonte)) { t.skip('PACOTES fora deste clone'); return; }
   assert.equal(rules, readFileSync(fonte, 'utf8'));
 });
 
