@@ -1,7 +1,7 @@
 /**
  * UI Controller: SessaoController
  * Cofre, login e acesso — mesmo fluxo do painel de feedback:
- * 1. Nada aparece antes do PIN FINANC ou da biometria (kit stk-pkg-security, window.vaultReady).
+ * 1. Nada aparece antes do PIN FINANC ou da biometria (kit stk-pkt-security, window.vaultReady).
  * 2. Com e-mail e senha guardados no cofre (secureStorage, AES-GCM), o painel entra sozinho no Firebase.
  *    A sessão do Firebase fica só na memória: fechar ou bloquear derruba o login.
  * 3. O painel só abre depois que o Firestore confirma que a conta governa (regra gestor()).
