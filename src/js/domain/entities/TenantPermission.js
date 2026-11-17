@@ -1,4 +1,4 @@
-import { PLANOS } from '../../../stk-pkg-governanca/stk-pkg-governanca-contrato.js';
+import { PLANOS } from '../../../stk-pkt-governanca/stk-pkt-governanca-contrato.js';
 
 /**
  * Entidade de Domínio: TenantPermission
@@ -75,7 +75,7 @@ export class TenantPermission {
   atualizarPlano(plano) {
     if (PLANOS[plano]) {
       this.licenca.plano = plano;
-      // Tabela única do contrato stk-pkg-governanca (a mesma da aprovação)
+      // Tabela única do contrato stk-pkt-governanca (a mesma da aprovação)
       this.permissoesModulos = { ...this.permissoesModulos, ...PLANOS[plano] };
     }
   }

@@ -1,6 +1,6 @@
 rules_version = '2';
 // Regras ÚNICAS do projeto systekna-feedback: avaliações/sugestões/erros dos apps (painel de feedback)
-// e as coleções do Governança Systekna. Fonte: PACOTES/stk-pkg-doacao/firestore.rules.
+// e as coleções do Governança Systekna. Fonte: PACOTES/stk-pkt-doacao/firestore.rules.
 // O governanca-systekna guarda uma CÓPIA idêntica (conferida por teste). Publicar só desta pasta:
 //   npx -y firebase-tools deploy --only firestore --project systekna-feedback
 service cloud.firestore {
@@ -46,7 +46,7 @@ service cloud.firestore {
         && request.resource.data.lida is bool;
     }
 
-    // Relatórios de erro (stk-pkg-erros.js): qualquer app cria, só com campos técnicos e limpos; só o dono lê
+    // Relatórios de erro (stk-pkt-erros.js): qualquer app cria, só com campos técnicos e limpos; só o dono lê
     function textoAte(v, max) { return v is string && v.size() <= max; }
     match /erros/{id} {
       allow create: if request.resource.data.keys().hasOnly(['app', 'versao', 'tipo', 'mensagem', 'origem', 'pilha', 'navegador', 'assinatura', 'criadoEm'])

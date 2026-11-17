@@ -1,6 +1,6 @@
 import { UserRegistration } from '../domain/entities/UserRegistration.js';
 import { TenantPermission } from '../domain/entities/TenantPermission.js';
-import { modulosDoPlano } from '../../stk-pkg-governanca/stk-pkg-governanca-contrato.js';
+import { modulosDoPlano } from '../../stk-pkt-governanca/stk-pkt-governanca-contrato.js';
 
 /**
  * Application Service: UserApprovalService

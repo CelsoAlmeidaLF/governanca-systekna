@@ -1,7 +1,7 @@
 /**
  * Domain: ContaCofre
  * Regras puras da conta do painel guardada no cofre do aparelho (mesmo modelo do painel de feedback).
- * O cofre (secureStorage do kit stk-pkg-security) cifra o texto com AES-GCM pela chave do PIN ou da biometria;
+ * O cofre (secureStorage do kit stk-pkt-security) cifra o texto com AES-GCM pela chave do PIN ou da biometria;
  * aqui só se monta e se confere o formato. Nada disto toca no DOM nem no Firebase.
  */
 

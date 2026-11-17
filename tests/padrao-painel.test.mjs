@@ -16,10 +16,10 @@ const hash = (texto) => createHash('sha256').update(texto).digest('hex');
 
 test('cofre: o painel abre pelo kit de segurança (PIN FINANC / biometria)', () => {
   assert.match(html, /<html[^>]*class="vault-locked"[^>]*data-vault-app="governanca-systekna"/);
-  const ordem = ['stk-pkg-financ-icons.js', 'stk-pkg-bip39-pt.js', 'stk-pkg-secure-vault.js', 'stk-pkg-secure-ui.js', 'js/main.js'].map((f) => html.indexOf(`src="${f}"`));
+  const ordem = ['stk-pkt-financ-icons.js', 'stk-pkt-bip39-pt.js', 'stk-pkt-secure-vault.js', 'stk-pkt-secure-ui.js', 'js/main.js'].map((f) => html.indexOf(`src="${f}"`));
   assert.ok(ordem.every((i) => i > 0), 'todos os scripts presentes');
   assert.deepEqual([...ordem].sort((a, b) => a - b), ordem, 'kit antes do app');
-  assert.ok(html.indexOf('stk-pkg-secure-ui.css') < html.indexOf('css/aero.css'), 'o Aero sobrescreve as cores do kit');
+  assert.ok(html.indexOf('stk-pkt-secure-ui.css') < html.indexOf('css/aero.css'), 'o Aero sobrescreve as cores do kit');
   assert.match(html, /data-vault-profile-slot/, 'menu ⋮ no cabeçalho');
 });
 
@@ -75,41 +75,41 @@ test('design: Aero 3.0 com a mesma base do painel de feedback', () => {
   assert.ok(!existsSync(new URL('src/css/tokens.css', raiz)), 'design antigo removido');
 });
 
-test('kit: cópias idênticas às de PACOTES/stk-pkg-security (não editar aqui)', (t) => {
-  const pacote = new URL('../../PACOTES/stk-pkg-security/', raiz);
+test('kit: cópias idênticas às de PACOTES/stk-pkt-security (não editar aqui)', (t) => {
+  const pacote = new URL('../../PACOTES/stk-pkt-security/', raiz);
   if (!existsSync(pacote)) { t.skip('PACOTES fora deste clone'); return; }
-  for (const f of ['stk-pkg-financ-icons.js', 'stk-pkg-bip39-pt.js', 'stk-pkg-secure-vault.js', 'stk-pkg-secure-ui.js', 'stk-pkg-secure-ui.css']) {
+  for (const f of ['stk-pkt-financ-icons.js', 'stk-pkt-bip39-pt.js', 'stk-pkt-secure-vault.js', 'stk-pkt-secure-ui.js', 'stk-pkt-secure-ui.css']) {
     assert.equal(hash(ler('src/' + f)), hash(readFileSync(new URL(f, pacote), 'utf8')), f);
   }
 });
 
-const PKG_GOVERNANCA = ['stk-pkg-governanca-contrato.js', 'stk-pkg-governanca-config.js', 'stk-pkg-governanca-cliente.js', 'stk-pkg-governanca-firestore.js'];
+const PKG_GOVERNANCA = ['stk-pkt-governanca-contrato.js', 'stk-pkt-governanca-config.js', 'stk-pkt-governanca-cliente.js', 'stk-pkt-governanca-firestore.js'];
 
-test('pkg-governanca: cópias idênticas às de PACOTES/stk-pkg-governanca (não editar aqui)', (t) => {
-  const pacote = new URL('../../PACOTES/stk-pkg-governanca/', raiz);
+test('pkg-governanca: cópias idênticas às de PACOTES/stk-pkt-governanca (não editar aqui)', (t) => {
+  const pacote = new URL('../../PACOTES/stk-pkt-governanca/', raiz);
   if (!existsSync(pacote)) { t.skip('PACOTES fora deste clone'); return; }
   for (const f of PKG_GOVERNANCA) {
-    assert.equal(hash(ler('src/stk-pkg-governanca/' + f)), hash(readFileSync(new URL(f, pacote), 'utf8')), f);
+    assert.equal(hash(ler('src/stk-pkt-governanca/' + f)), hash(readFileSync(new URL(f, pacote), 'utf8')), f);
   }
-  assert.equal(hash(ler('tests/stk-pkg-governanca.test.mjs')), hash(readFileSync(new URL('test/governanca.test.mjs', pacote), 'utf8')), 'teste do pacote');
+  assert.equal(hash(ler('tests/stk-pkt-governanca.test.mjs')), hash(readFileSync(new URL('test/governanca.test.mjs', pacote), 'utf8')), 'teste do pacote');
 });
 
 test('pkg-governanca: o painel usa o contrato (planos, UID e coleções) e o service worker guarda o pacote', () => {
   assert.match(ler('src/js/domain/entities/TenantPermission.js'), /PLANOS\[plano\]/);
   assert.match(ler('src/js/application/UserApprovalService.js'), /modulosDoPlano\(plano/);
-  assert.match(ler('src/js/ui/utils/formatarUid.js'), /stk-pkg-governanca-contrato\.js/);
+  assert.match(ler('src/js/ui/utils/formatarUid.js'), /stk-pkt-governanca-contrato\.js/);
   const adapter = ler('src/js/infrastructure/adapters/FirestoreGovernanceAdapter.js');
   assert.doesNotMatch(adapter, /'(solicitacoes_governanca|tenants_governanca|telemetria_erros|feedbacks_usuarios)'/);
   const sw = ler('src/sw.js');
-  for (const f of PKG_GOVERNANCA) assert.ok(sw.includes(`'./stk-pkg-governanca/${f}'`), f);
+  for (const f of PKG_GOVERNANCA) assert.ok(sw.includes(`'./stk-pkt-governanca/${f}'`), f);
 });
 
-test('regras: firestore.rules é cópia idêntica da fonte única em PACOTES/stk-pkg-doacao', (t) => {
+test('regras: firestore.rules é cópia idêntica da fonte única em PACOTES/stk-pkt-doacao', (t) => {
   const rules = ler('firestore.rules');
   assert.match(rules, /function gestor\(\)/);
   assert.match(rules, /match \/sugestoes\/\{id\}/, 'mesmo arquivo do painel de feedback: um deploy não apaga o outro');
   assert.match(rules, /match \/solicitacoes_governanca\/\{id\}/);
-  const fonte = new URL('../../PACOTES/stk-pkg-doacao/firestore.rules', raiz);
+  const fonte = new URL('../../PACOTES/stk-pkt-doacao/firestore.rules', raiz);
   if (!existsSync(fonte)) { t.skip('PACOTES fora deste clone'); return; }
   assert.equal(rules, readFileSync(fonte, 'utf8'));
 });
@@ -148,5 +148,5 @@ test('hospedagem: cabeçalhos de segurança iguais aos do painel no Firebase Hos
   assert.equal(h['Referrer-Policy'], 'no-referrer');
   assert.match(h['Strict-Transport-Security'], /max-age=31536000/);
   const pkg = JSON.parse(ler('package.json'));
-  assert.equal(pkg.scripts['deploy:rules'], undefined, 'regras só se publicam de PACOTES/stk-pkg-doacao');
+  assert.equal(pkg.scripts['deploy:rules'], undefined, 'regras só se publicam de PACOTES/stk-pkt-doacao');
 });

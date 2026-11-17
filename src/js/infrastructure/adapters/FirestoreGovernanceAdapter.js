@@ -1,4 +1,4 @@
-import { COLECOES } from '../../../stk-pkg-governanca/stk-pkg-governanca-contrato.js';
+import { COLECOES } from '../../../stk-pkt-governanca/stk-pkt-governanca-contrato.js';
 
 // Teto por listagem: coleções de criação pública podem crescer por abuso; o painel mostra os mais recentes
 export const LIMITE_LISTAGEM = 300;

@@ -1,11 +1,11 @@
 /* Governança Systekna · service worker (mesmo modelo do painel de feedback e do Finanças da Casa).
    Troque CACHE_NAME a cada versão (igual ao data-vault-version do index.html); o teste pwa confere. */
-const CACHE_NAME = 'governanca-systekna-v1.4.1';
+const CACHE_NAME = 'governanca-systekna-v1.4.2';
 const APP_SHELL = [
-  './', './index.html', './manifest.json', './stk-pkg-bip39-pt.js', './stk-pkg-financ-icons.js', './stk-pkg-secure-ui.css',
-  './stk-pkg-secure-ui.js', './stk-pkg-secure-vault.js', './css/aero.css', './fonts/fonts.css', './fonts/open-sans.woff2',
-  './stk-pkg-governanca/stk-pkg-governanca-contrato.js', './stk-pkg-governanca/stk-pkg-governanca-config.js',
-  './stk-pkg-governanca/stk-pkg-governanca-cliente.js', './stk-pkg-governanca/stk-pkg-governanca-firestore.js',
+  './', './index.html', './manifest.json', './stk-pkt-bip39-pt.js', './stk-pkt-financ-icons.js', './stk-pkt-secure-ui.css',
+  './stk-pkt-secure-ui.js', './stk-pkt-secure-vault.js', './css/aero.css', './fonts/fonts.css', './fonts/open-sans.woff2',
+  './stk-pkt-governanca/stk-pkt-governanca-contrato.js', './stk-pkt-governanca/stk-pkt-governanca-config.js',
+  './stk-pkt-governanca/stk-pkt-governanca-cliente.js', './stk-pkt-governanca/stk-pkt-governanca-firestore.js',
   './js/main.js', './js/application/AuthService.js', './js/application/DevNewsService.js',
   './js/application/ErrorManagementService.js', './js/application/FeedbackService.js', './js/application/UserApprovalService.js',
   './js/domain/ContaCofre.js', './js/domain/entities/DevNotice.js', './js/domain/entities/Feedback.js',
