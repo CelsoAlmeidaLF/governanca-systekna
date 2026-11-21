@@ -14,7 +14,11 @@ export class FeedbackService {
       LIVROCAIXA: 'Livro-Caixa / Finanças',
       TAXOMETRO: 'Taxômetro',
       INVEST: 'Investimentos Sim',
-      IDENTIDADE: 'Identidade Systekna'
+      IDENTIDADE: 'Identidade Systekna',
+      FORCA: 'Fit Força',
+      SMART: 'Fit Smart',
+      AGENDA: 'Studio Agenda',
+      MULTICM: 'BarGestão Multi-CM'
     };
   }
 
