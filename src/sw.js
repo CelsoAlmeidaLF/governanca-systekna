@@ -3,7 +3,7 @@
 const CACHE_NAME = 'governanca-systekna-v1.4.2';
 const APP_SHELL = [
   './', './index.html', './manifest.json', './stk-pkt-bip39-pt.js', './stk-pkt-financ-icons.js', './stk-pkt-secure-ui.css',
-  './stk-pkt-secure-ui.js', './stk-pkt-secure-vault.js', './css/aero.css', './fonts/fonts.css', './fonts/open-sans.woff2',
+  './stk-pkt-secure-ui.js', './stk-pkt-secure-vault.js', './stk-pkt-audit-trail.js', './stk-pkt-pii-sanitizer.js', './stk-pkt-security-certificate.js', './css/aero.css', './fonts/fonts.css', './fonts/open-sans.woff2',
   './stk-pkt-governanca/stk-pkt-governanca-contrato.js', './stk-pkt-governanca/stk-pkt-governanca-config.js',
   './stk-pkt-governanca/stk-pkt-governanca-cliente.js', './stk-pkt-governanca/stk-pkt-governanca-firestore.js',
   './js/main.js', './js/application/AuthService.js', './js/application/DevNewsService.js',
