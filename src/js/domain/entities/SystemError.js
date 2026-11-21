@@ -48,6 +48,10 @@ export class SystemError {
       TAXOMETRO: 'CelsoAlmeidaLF/taxometro',
       INVEST: 'CelsoAlmeidaLF/invest-sim',
       IDENTIDADE: 'CelsoAlmeidaLF/identidade-systekna',
+      FORCA: 'CelsoAlmeidaLF/forca',
+      SMART: 'CelsoAlmeidaLF/fit',
+      AGENDA: 'CelsoAlmeidaLF/studio-agenda-completo',
+      MULTICM: 'CelsoAlmeidaLF/stk-app-multi-cm',
       ...reposMap
     };
 

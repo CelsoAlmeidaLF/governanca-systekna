@@ -12,7 +12,7 @@ service cloud.firestore {
     }
 
     function appValido(app) {
-      return app in ['CRIPTO', 'LIVROCAIXA', 'CAMBIO', 'DESPESAS', 'LAUNCHER', 'TAXOMETRO', 'INVEST'];
+      return app in ['CRIPTO', 'LIVROCAIXA', 'CAMBIO', 'DESPESAS', 'LAUNCHER', 'TAXOMETRO', 'INVEST', 'FORCA', 'SMART', 'AGENDA', 'BARGESTAO', 'MULTICM'];
     }
 
     // Avaliações: públicas (só app + nota), ninguém edita; só o dono apaga (spam)
@@ -86,7 +86,7 @@ service cloud.firestore {
 
     // Apps do ecossistema que podem enviar telemetria/feedback
     function appGovernanca(v) {
-      return v in ['BARGESTAO', 'CAMBIO', 'CRIPTO', 'LIVROCAIXA', 'TAXOMETRO', 'INVEST', 'IDENTIDADE'];
+      return v in ['BARGESTAO', 'CAMBIO', 'CRIPTO', 'LIVROCAIXA', 'TAXOMETRO', 'INVEST', 'IDENTIDADE', 'FORCA', 'SMART', 'AGENDA', 'MULTICM'];
     }
 
     function versaoValida(v) {
